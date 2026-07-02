@@ -1,0 +1,23 @@
+{
+  "_comment_top": "MCP server config for Claude Code. Loaded at session start. See docs/mcp-stack.md for the WHY of each server, MCP-SETUP.md for one-time install steps (PATH addition + GITHUB_PAT env var). Restart Claude Code after editing this file.",
+  "mcpServers": {
+    "serena": {
+      "_comment": "Code intelligence (Rust via rust-analyzer, Python via pyright). Prefer over Grep for symbol queries. Exact tool names: mcp__serena__find_symbol, find_referencing_symbols, get_symbols_overview, find_implementations, find_declaration. Requires the user-local Scripts dir on PATH; see MCP-SETUP.md.",
+      "type": "stdio",
+      "command": "serena",
+      "args": ["start-mcp-server", "--context", "claude-code", "--project-from-cwd"],
+      "alwaysLoad": true
+    },
+    "github": {
+      "_comment": "Official hosted GitHub MCP — no local install. PAT auth via Authorization header. Method-multiplexed tools: mcp__github__issue_read (method=get|get_comments|...), pull_request_read (method=get|get_diff|...), search_issues, list_issues, get_file_contents. Read-only by default per X-MCP-Readonly header; flip to false if you need writes (issue_write, etc.). Replace __PROJECT_OWNER__/__PROJECT_NAME__ with the actual GitHub owner and repo name for this project.",
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PAT}",
+        "X-MCP-Toolsets": "context,issues",
+        "X-MCP-Readonly": "true"
+      },
+      "alwaysLoad": true
+    }
+  }
+}

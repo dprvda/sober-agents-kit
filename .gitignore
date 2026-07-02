@@ -1,0 +1,7 @@
+# claude-code-kit repo own ignores
+__pycache__/
+*.pyc
+*.kit-bak
+.DS_Store
+Thumbs.db
+node_modules/

@@ -1,0 +1,61 @@
+# =====================================================================
+# .pre-commit-config.yaml — wired by the dprvda-kit
+# =====================================================================
+# Install once:
+#     pip install pre-commit
+#     pre-commit install                 # pre-commit + commit-msg stages
+#     pre-commit install --hook-type commit-msg --hook-type post-commit
+#
+# Every `git commit` then runs the gates below. Silent on pass; blocks the
+# commit with a structured report on fail. Authoritative roster lives in
+# .claude/dprvda-kit/gates/run_gates_parallel.py.
+#
+# All hook ids are prefixed `dprvda-kit-` so a second kit's pre-commit
+# hooks can coexist in this file without colliding.
+# =====================================================================
+
+repos:
+  - repo: local
+    hooks:
+      # --- doc + code-discipline gates (2-phase dispatcher) -----------
+      - id: dprvda-kit-gates
+        name: dprvda-kit gates (file-reason, links, doc-freshness, md-size, secrets, AI judge)
+        entry: python .claude/dprvda-kit/gates/run_gates_parallel.py
+        language: system
+        always_run: true
+        pass_filenames: false
+        verbose: true
+
+      # --- ephemeral context refreshers (gitignored output) ----------
+      - id: dprvda-kit-refresh-history
+        name: regenerate .git-history.md (recent commits)
+        entry: python .claude/dprvda-kit/gates/refresh_history.py
+        language: system
+        stages: [pre-commit, post-commit, post-merge, post-checkout]
+        always_run: true
+        pass_filenames: false
+
+      - id: dprvda-kit-refresh-issues
+        name: regenerate .gh-issues.md (open GitHub issues, if gh present)
+        entry: python .claude/dprvda-kit/gates/refresh_issues.py
+        language: system
+        stages: [pre-commit, post-commit, post-merge, post-checkout]
+        always_run: true
+        pass_filenames: false
+
+      # --- Conventional Commits validator (commit-msg stage) ---------
+      - id: dprvda-kit-commit-msg
+        name: Conventional Commits validator (+ optional AI cross-check)
+        entry: python .claude/dprvda-kit/gates/critic_llm_commit.py
+        language: system
+        stages: [commit-msg]
+        pass_filenames: true
+
+
+      # --- self-defending canary for the doc-freshness gate ----------
+      - id: dprvda-kit-doc-freshness-canary
+        name: doc-freshness gate self-test (canary)
+        entry: python .claude/dprvda-kit/gates/test_check_doc_freshness.py
+        language: system
+        files: '^\.claude/dprvda-kit/gates/(check_doc_freshness|test_check_doc_freshness|_git_mtime)\.py$'
+        pass_filenames: false

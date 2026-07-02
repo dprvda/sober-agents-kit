@@ -1,0 +1,591 @@
+{
+  "communities": {
+    "0": [
+      "gates_critic_llm",
+      "gates_critic_llm_apply_review_block",
+      "gates_critic_llm_call_judge",
+      "gates_critic_llm_comment_char_for",
+      "gates_critic_llm_emit_report",
+      "gates_critic_llm_eprint",
+      "gates_critic_llm_get_api_key",
+      "gates_critic_llm_get_staged_content",
+      "gates_critic_llm_get_staged_diff",
+      "gates_critic_llm_get_staged_source_files",
+      "gates_critic_llm_insert_review_block",
+      "gates_critic_llm_judge_health_check",
+      "gates_critic_llm_load_prompt",
+      "gates_critic_llm_load_sidecar",
+      "gates_critic_llm_main",
+      "gates_critic_llm_post_once",
+      "gates_critic_llm_rationale_120",
+      "gates_critic_llm_rationale_174",
+      "gates_critic_llm_rationale_196",
+      "gates_critic_llm_rationale_210",
+      "gates_critic_llm_rationale_239",
+      "gates_critic_llm_rationale_259",
+      "gates_critic_llm_rationale_276",
+      "gates_critic_llm_rationale_294",
+      "gates_critic_llm_rationale_308",
+      "gates_critic_llm_rationale_324",
+      "gates_critic_llm_rationale_341",
+      "gates_critic_llm_rationale_432",
+      "gates_critic_llm_rationale_478",
+      "gates_critic_llm_rationale_518",
+      "gates_critic_llm_remove_review_block",
+      "gates_critic_llm_render_block",
+      "gates_critic_llm_review_block_text",
+      "gates_critic_llm_review_file",
+      "gates_critic_llm_save_sidecar",
+      "gates_critic_llm_sidecar_path_for",
+      "gates_critic_llm_strip_review_block",
+      "gates_critic_llm_unavailable_pass",
+      "gates_critic_llm_verdict",
+      "gates_critic_llm_verdict_errored",
+      "gates_critic_llm_verdict_ok",
+      "template_claude_dprvda_kit_gates_critic_llm_py_path"
+    ],
+    "1": [
+      "gates_critic_llm_commit",
+      "gates_critic_llm_commit_build_judge_prompt",
+      "gates_critic_llm_commit_call_judge",
+      "gates_critic_llm_commit_classify_message",
+      "gates_critic_llm_commit_commit_messages_since_tag",
+      "gates_critic_llm_commit_commits_since_tag",
+      "gates_critic_llm_commit_diff_stats",
+      "gates_critic_llm_commit_extract_tag_trailer",
+      "gates_critic_llm_commit_issue_is_actionable_block",
+      "gates_critic_llm_commit_latest_tag",
+      "gates_critic_llm_commit_load_api_key",
+      "gates_critic_llm_commit_load_commit_prompt_template",
+      "gates_critic_llm_commit_main",
+      "gates_critic_llm_commit_next_semver_options",
+      "gates_critic_llm_commit_parse_semver",
+      "gates_critic_llm_commit_rationale_125",
+      "gates_critic_llm_commit_rationale_155",
+      "gates_critic_llm_commit_rationale_178",
+      "gates_critic_llm_commit_rationale_204",
+      "gates_critic_llm_commit_rationale_218",
+      "gates_critic_llm_commit_rationale_237",
+      "gates_critic_llm_commit_rationale_257",
+      "gates_critic_llm_commit_rationale_290",
+      "gates_critic_llm_commit_rationale_298",
+      "gates_critic_llm_commit_rationale_321",
+      "gates_critic_llm_commit_rationale_340",
+      "gates_critic_llm_commit_rationale_359",
+      "gates_critic_llm_commit_rationale_495",
+      "gates_critic_llm_commit_rationale_563",
+      "gates_critic_llm_commit_required_bump",
+      "gates_critic_llm_commit_required_next_tag",
+      "gates_critic_llm_commit_staged_diff",
+      "gates_critic_llm_commit_staged_files",
+      "gates_critic_llm_commit_unavailable_pass",
+      "gates_critic_llm_commit_validate_format",
+      "gates_critic_llm_commit_write_sidecar",
+      "template_claude_dprvda_kit_gates_critic_llm_commit_py_path"
+    ],
+    "2": [
+      "gates_check_doc_freshness",
+      "gates_check_doc_freshness_check_authored_md_coverage",
+      "gates_check_doc_freshness_check_freshness",
+      "gates_check_doc_freshness_check_presence",
+      "gates_check_doc_freshness_check_tracks_dir",
+      "gates_check_doc_freshness_checkerror",
+      "gates_check_doc_freshness_checkerror_render",
+      "gates_check_doc_freshness_effective_mtime",
+      "gates_check_doc_freshness_handle_ack_no_drift",
+      "gates_check_doc_freshness_handoff_in_staged_commit",
+      "gates_check_doc_freshness_is_top_level_exempt",
+      "gates_check_doc_freshness_main",
+      "gates_check_doc_freshness_newest_content_mtime",
+      "gates_check_doc_freshness_parse_derived_from",
+      "gates_check_doc_freshness_parse_frozen_at",
+      "gates_check_doc_freshness_parse_tracks_dir",
+      "gates_check_doc_freshness_rationale_219",
+      "gates_check_doc_freshness_rationale_286",
+      "gates_check_doc_freshness_rationale_328",
+      "gates_check_doc_freshness_rationale_365",
+      "gates_check_doc_freshness_rationale_402",
+      "gates_check_doc_freshness_rationale_493",
+      "gates_check_doc_freshness_rationale_512",
+      "gates_check_doc_freshness_rationale_546",
+      "gates_check_doc_freshness_rationale_607",
+      "gates_check_doc_freshness_rationale_644",
+      "gates_check_doc_freshness_rationale_789",
+      "gates_check_doc_freshness_rationale_806",
+      "gates_check_doc_freshness_validate_ack_reason",
+      "gates_check_doc_freshness_walk_repo",
+      "template_claude_dprvda_kit_gates_check_doc_freshness_py_path"
+    ],
+    "3": [
+      "gates_check_links",
+      "gates_check_links_brokenlink",
+      "gates_check_links_brokenlink_render",
+      "gates_check_links_check_link",
+      "gates_check_links_collect_md_files",
+      "gates_check_links_extract_anchors",
+      "gates_check_links_extract_links",
+      "gates_check_links_find_target_md",
+      "gates_check_links_is_external",
+      "gates_check_links_is_frozen",
+      "gates_check_links_is_skippable_extension",
+      "gates_check_links_main",
+      "gates_check_links_rationale_111",
+      "gates_check_links_rationale_120",
+      "gates_check_links_rationale_130",
+      "gates_check_links_rationale_140",
+      "gates_check_links_rationale_154",
+      "gates_check_links_rationale_178",
+      "gates_check_links_rationale_199",
+      "gates_check_links_rationale_213",
+      "gates_check_links_rationale_226",
+      "gates_check_links_rationale_237",
+      "gates_check_links_rationale_253",
+      "gates_check_links_rationale_277",
+      "gates_check_links_rationale_295",
+      "gates_check_links_resolve_target",
+      "gates_check_links_skip_source",
+      "gates_check_links_slugify",
+      "gates_check_links_split_url",
+      "gates_check_links_strip_code_blocks",
+      "template_claude_dprvda_kit_gates_check_links_py_path"
+    ],
+    "4": [
+      "install_copy_payload",
+      "install_install_pack",
+      "install_is_text",
+      "install_load_settings",
+      "install_log",
+      "install_main",
+      "install_py_install",
+      "install_py_path",
+      "install_rationale_57",
+      "install_rename_kit",
+      "install_run_precommit",
+      "install_save_settings",
+      "install_size_sessionstart",
+      "install_strip_ai_judge",
+      "install_strip_mcp",
+      "install_strip_settings_hook",
+      "install_substitute",
+      "install_warn"
+    ],
+    "5": [
+      "dprvda_kit_inject_context_docs",
+      "dprvda_kit_inject_context_docs_adr_index",
+      "dprvda_kit_inject_context_docs_build_corpus",
+      "dprvda_kit_inject_context_docs_chunks",
+      "dprvda_kit_inject_context_docs_emit",
+      "dprvda_kit_inject_context_docs_latest_handoff",
+      "dprvda_kit_inject_context_docs_main",
+      "dprvda_kit_inject_context_docs_open_issues",
+      "dprvda_kit_inject_context_docs_rationale_106",
+      "dprvda_kit_inject_context_docs_rationale_150",
+      "dprvda_kit_inject_context_docs_rationale_39",
+      "dprvda_kit_inject_context_docs_rationale_47",
+      "dprvda_kit_inject_context_docs_rationale_66",
+      "dprvda_kit_inject_context_docs_rationale_82",
+      "dprvda_kit_inject_context_docs_rationale_94",
+      "dprvda_kit_inject_context_docs_read",
+      "dprvda_kit_inject_context_docs_recent_commits"
+    ],
+    "6": [
+      "gates_check_md_size",
+      "gates_check_md_size_classify",
+      "gates_check_md_size_compaction_framework_help",
+      "gates_check_md_size_detect_symptoms",
+      "gates_check_md_size_encoded_cwd",
+      "gates_check_md_size_main",
+      "gates_check_md_size_rationale_114",
+      "gates_check_md_size_rationale_207",
+      "gates_check_md_size_rationale_73",
+      "gates_check_md_size_rationale_80",
+      "gates_check_md_size_symptom",
+      "gates_check_md_size_warn_for",
+      "template_claude_dprvda_kit_gates_check_md_size_py_path"
+    ],
+    "7": [
+      "gates_test_check_doc_freshness",
+      "gates_test_check_doc_freshness_commit_at",
+      "gates_test_check_doc_freshness_git_init",
+      "gates_test_check_doc_freshness_load_module",
+      "gates_test_check_doc_freshness_main",
+      "gates_test_check_doc_freshness_rationale_58",
+      "gates_test_check_doc_freshness_rationale_78",
+      "gates_test_check_doc_freshness_rationale_89",
+      "gates_test_check_doc_freshness_rationale_99",
+      "gates_test_check_doc_freshness_run",
+      "gates_test_check_doc_freshness_run_gate",
+      "gates_test_check_doc_freshness_stage",
+      "template_claude_dprvda_kit_gates_test_check_doc_freshness_py_path"
+    ],
+    "8": [
+      "installmd_install_py",
+      "packs_python_readme_check_python_lint_py",
+      "packs_rust_readme_check_binary_secrets_py",
+      "packs_rust_readme_check_cargo_audit_py",
+      "packs_rust_readme_check_cargo_vet_py",
+      "readmemd_claude_code_kit",
+      "template_claude_dprvda_kit_gates_prompts_critic_llm_commit_md",
+      "template_claude_dprvda_kit_gates_prompts_critic_llm_md",
+      "template_claude_md",
+      "template_pre_commit_config_yaml",
+      "template_readme_claude_md"
+    ],
+    "9": [
+      "gates_check_file_reason",
+      "gates_check_file_reason_checkerror",
+      "gates_check_file_reason_checkerror_render",
+      "gates_check_file_reason_find_reason_marker",
+      "gates_check_file_reason_is_exempt_path",
+      "gates_check_file_reason_iter_target_files",
+      "gates_check_file_reason_main",
+      "gates_check_file_reason_rationale_189",
+      "gates_check_file_reason_validate_file",
+      "template_claude_dprvda_kit_gates_check_file_reason_py_path"
+    ],
+    "10": [
+      "gates_git_mtime",
+      "gates_git_mtime_effective_mtime",
+      "gates_git_mtime_git_commit_ts",
+      "gates_git_mtime_load",
+      "gates_git_mtime_rationale_108",
+      "gates_git_mtime_rationale_122",
+      "gates_git_mtime_rationale_47",
+      "gates_git_mtime_rationale_60",
+      "gates_git_mtime_reset",
+      "template_claude_dprvda_kit_gates_git_mtime_py_path"
+    ],
+    "11": [
+      "gates_apply_tag_trailer",
+      "gates_apply_tag_trailer_create_tag",
+      "gates_apply_tag_trailer_head_commit_message",
+      "gates_apply_tag_trailer_head_sha",
+      "gates_apply_tag_trailer_head_subject",
+      "gates_apply_tag_trailer_main",
+      "gates_apply_tag_trailer_rationale_57",
+      "gates_apply_tag_trailer_tag_target_sha"
+    ],
+    "12": [
+      "hooks_remind_claude_md",
+      "hooks_remind_claude_md_extract_sections",
+      "hooks_remind_claude_md_main",
+      "hooks_remind_claude_md_rationale_81",
+      "hooks_remind_claude_md_rationale_92",
+      "hooks_remind_claude_md_repo_root",
+      "template_claude_dprvda_kit_hooks_remind_claude_md_py_path"
+    ],
+    "13": [
+      "gates_run_gates_parallel",
+      "gates_run_gates_parallel_gateresult",
+      "gates_run_gates_parallel_gateresult_label",
+      "gates_run_gates_parallel_gateresult_passed",
+      "gates_run_gates_parallel_main",
+      "gates_run_gates_parallel_run_gate"
+    ],
+    "14": [
+      "hooks_check_script_launch",
+      "hooks_check_script_launch_main",
+      "hooks_check_script_launch_rationale_76",
+      "hooks_check_script_launch_sidecar_path_for",
+      "template_claude_dprvda_kit_hooks_check_script_launch_py_path"
+    ],
+    "15": [
+      "hooks_nudge_to_github_mcp",
+      "hooks_nudge_to_github_mcp_build_nudge",
+      "hooks_nudge_to_github_mcp_main",
+      "hooks_nudge_to_github_mcp_parse_first_words",
+      "hooks_nudge_to_github_mcp_rationale_79"
+    ],
+    "16": [
+      "hooks_nudge_to_serena",
+      "hooks_nudge_to_serena_build_nudge",
+      "hooks_nudge_to_serena_is_code_path",
+      "hooks_nudge_to_serena_is_identifier",
+      "hooks_nudge_to_serena_main"
+    ],
+    "17": [
+      "mcp_command_serena",
+      "mcp_package_start_mcp_server",
+      "template_mcp",
+      "template_mcp_mcp_server_github",
+      "template_mcp_mcp_server_serena"
+    ],
+    "18": [
+      "hooks_nudge_to_foreground_git",
+      "hooks_nudge_to_foreground_git_build_nudge",
+      "hooks_nudge_to_foreground_git_main"
+    ],
+    "19": [
+      "c_users_dprvd_documents_pravda_automations_page_workspace_repos_claude_code_kit_install_sh__entry",
+      "install_sh_install"
+    ],
+    "20": [
+      "c_users_dprvd_documents_pravda_automations_page_workspace_repos_claude_code_kit_uninstall_sh__entry",
+      "uninstall_sh_uninstall"
+    ],
+    "21": [
+      "gates_check_cargo_audit",
+      "gates_check_cargo_audit_main"
+    ],
+    "22": [
+      "gates_check_cargo_vet",
+      "gates_check_cargo_vet_main"
+    ],
+    "23": [
+      "gates_check_python_lint",
+      "gates_check_python_lint_main"
+    ],
+    "24": [
+      "gates_refresh_history",
+      "gates_refresh_history_main"
+    ],
+    "25": [
+      "gates_refresh_issues",
+      "gates_refresh_issues_main"
+    ],
+    "26": [
+      "hooks_block_dangerous_git",
+      "hooks_block_dangerous_git_main"
+    ],
+    "27": [
+      "hooks_test_block_dangerous_git",
+      "hooks_test_block_dangerous_git_run"
+    ],
+    "28": [
+      "uninstall_main",
+      "uninstall_py_uninstall"
+    ],
+    "29": [
+      "install_ps1_install"
+    ],
+    "30": [
+      "seeds_global_claude_md"
+    ],
+    "31": [
+      "seeds_lessons_seed_md"
+    ],
+    "32": [
+      "seeds_user_profile_md"
+    ],
+    "33": [
+      "template_agents_md"
+    ],
+    "34": [
+      "template_claude_dprvda_kit_docs_context_framework_md"
+    ],
+    "35": [
+      "template_claude_dprvda_kit_docs_parallel_agents_md"
+    ],
+    "36": [
+      "template_claude_skills_audit_structure_skill_md"
+    ],
+    "37": [
+      "template_claude_skills_caveman_skill_md"
+    ],
+    "38": [
+      "template_claude_skills_compact_docs_skill_md"
+    ],
+    "39": [
+      "template_claude_skills_grill_me_skill_md"
+    ],
+    "40": [
+      "template_claude_skills_handoff_skill_md"
+    ],
+    "41": [
+      "template_claude_skills_tdd_deep_modules_md"
+    ],
+    "42": [
+      "template_claude_skills_tdd_interface_design_md"
+    ],
+    "43": [
+      "template_claude_skills_tdd_mocking_md"
+    ],
+    "44": [
+      "template_claude_skills_tdd_refactoring_md"
+    ],
+    "45": [
+      "template_claude_skills_tdd_skill_md"
+    ],
+    "46": [
+      "template_claude_skills_tdd_tests_md"
+    ],
+    "47": [
+      "template_claude_skills_to_issues_skill_md"
+    ],
+    "48": [
+      "template_claude_skills_write_a_skill_skill_md"
+    ],
+    "49": [
+      "template_claude_skills_zoom_out_skill_md"
+    ],
+    "50": [
+      "uninstall_ps1_uninstall"
+    ]
+  },
+  "cohesion": {
+    "0": 0.10685249709639953,
+    "1": 0.08708708708708708,
+    "2": 0.12903225806451613,
+    "3": 0.11182795698924732,
+    "4": 0.33986928104575165,
+    "5": 0.18382352941176472,
+    "6": 0.23076923076923078,
+    "7": 0.3333333333333333,
+    "8": 0.18181818181818182,
+    "9": 0.37777777777777777,
+    "10": 0.28888888888888886,
+    "11": 0.42857142857142855,
+    "12": 0.38095238095238093,
+    "13": 0.5333333333333333,
+    "14": 0.6,
+    "15": 0.6,
+    "16": 0.7,
+    "17": 0.4,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0,
+    "24": 1.0,
+    "25": 1.0,
+    "26": 1.0,
+    "27": 1.0,
+    "28": 1.0,
+    "29": 1.0,
+    "30": 1.0,
+    "31": 1.0,
+    "32": 1.0,
+    "33": 1.0,
+    "34": 1.0,
+    "35": 1.0,
+    "36": 1.0,
+    "37": 1.0,
+    "38": 1.0,
+    "39": 1.0,
+    "40": 1.0,
+    "41": 1.0,
+    "42": 1.0,
+    "43": 1.0,
+    "44": 1.0,
+    "45": 1.0,
+    "46": 1.0,
+    "47": 1.0,
+    "48": 1.0,
+    "49": 1.0,
+    "50": 1.0
+  },
+  "gods": [
+    {
+      "id": "gates_critic_llm_review_file",
+      "label": "review_file()",
+      "degree": 12
+    },
+    {
+      "id": "install_main",
+      "label": "main()",
+      "degree": 11
+    },
+    {
+      "id": "gates_critic_llm_verdict",
+      "label": "Verdict",
+      "degree": 11
+    },
+    {
+      "id": "gates_critic_llm_commit_main",
+      "label": "main()",
+      "degree": 11
+    },
+    {
+      "id": "gates_check_links_check_link",
+      "label": "check_link()",
+      "degree": 10
+    },
+    {
+      "id": "gates_critic_llm_main",
+      "label": "main()",
+      "degree": 10
+    },
+    {
+      "id": "gates_check_doc_freshness_check_tracks_dir",
+      "label": "check_tracks_dir()",
+      "degree": 9
+    },
+    {
+      "id": "gates_critic_llm_apply_review_block",
+      "label": "apply_review_block()",
+      "degree": 9
+    },
+    {
+      "id": "gates_critic_llm_commit_validate_format",
+      "label": "validate_format()",
+      "degree": 9
+    },
+    {
+      "id": "gates_check_doc_freshness_check_authored_md_coverage",
+      "label": "check_authored_md_coverage()",
+      "degree": 8
+    }
+  ],
+  "surprises": [
+    {
+      "source": "check_python_lint.py",
+      "target": "install.py",
+      "source_files": [
+        "packs/python/README.md",
+        "INSTALL.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; peripheral node `check_python_lint.py` unexpectedly reaches hub `install.py`"
+    },
+    {
+      "source": "check_binary_secrets.py",
+      "target": "install.py",
+      "source_files": [
+        "packs/rust/README.md",
+        "INSTALL.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; peripheral node `check_binary_secrets.py` unexpectedly reaches hub `install.py`"
+    },
+    {
+      "source": "check_cargo_audit.py",
+      "target": "install.py",
+      "source_files": [
+        "packs/rust/README.md",
+        "INSTALL.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; peripheral node `check_cargo_audit.py` unexpectedly reaches hub `install.py`"
+    },
+    {
+      "source": "check_cargo_vet.py",
+      "target": "install.py",
+      "source_files": [
+        "packs/rust/README.md",
+        "INSTALL.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; peripheral node `check_cargo_vet.py` unexpectedly reaches hub `install.py`"
+    },
+    {
+      "source": "claude-code-kit",
+      "target": "install.py",
+      "source_files": [
+        "README.md",
+        "INSTALL.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    }
+  ],
+  "tokens": {
+    "input": 30904,
+    "output": 2594
+  }
+}

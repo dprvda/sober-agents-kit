@@ -1,0 +1,112 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/hooks/block-dangerous-git.py\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/hooks/check-script-launch.py\"",
+            "timeout": 25
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/hooks/remind-claude-md.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/hooks/nudge-to-foreground-git.py\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/hooks/nudge-to-github-mcp.py\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/hooks/nudge-to-serena.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/inject_context_docs.py\" --chunk 1",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/inject_context_docs.py\" --chunk 2",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/inject_context_docs.py\" --chunk 3",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/inject_context_docs.py\" --chunk 4",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/inject_context_docs.py\" --chunk 5",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/inject_context_docs.py\" --chunk 6",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/inject_context_docs.py\" --chunk 7",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/inject_context_docs.py\" --chunk 8",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/dprvda-kit/hooks/session-progress.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

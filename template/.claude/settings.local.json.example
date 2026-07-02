@@ -1,0 +1,10 @@
+{
+  "_comment": "Copy to settings.local.json (gitignored) for per-developer overrides — e.g. a Bash allowlist so you aren't prompted for routine commands. This file is NOT committed; settings.json (committed) holds the shared hook wiring.",
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ]
+  }
+}

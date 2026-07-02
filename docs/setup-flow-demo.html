@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>/setup-pravda-skills — the user's journey</title>
+<style>
+:root{--paper:#faf6ef;--ink:#141210;--brass:#a97e2f;--signal:#c73e1d;--dim:#6f675c}
+*{box-sizing:border-box;margin:0}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 "Segoe UI",system-ui;padding:32px;max-width:1000px;margin:0 auto}
+h1{font-family:Georgia,serif;font-size:34px;margin-bottom:4px}
+.sub{color:var(--dim);margin-bottom:28px}
+.rail{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap}
+.rail button{border:1px solid var(--ink);background:transparent;padding:6px 12px;font:12px monospace;cursor:pointer;border-radius:2px}
+.rail button.on{background:var(--ink);color:var(--paper)}
+.step{display:none;border:1px solid var(--ink);border-radius:3px;overflow:hidden}
+.step.on{display:block}
+.bar{background:var(--ink);color:var(--paper);padding:8px 14px;font:13px monospace;display:flex;justify-content:space-between}
+.bar .t{color:var(--brass)}
+.term{background:#1b1916;color:#e8e2d6;font:14px/1.7 Consolas,monospace;padding:20px 22px;min-height:290px;white-space:pre-wrap}
+.q{color:#e8b64c}.a{color:#8fd08f}.sys{color:#8a8378}.act{color:#7fb8e8}.warn{color:#e87f6a}
+.note{padding:12px 16px;border-top:1px solid var(--ink);font-size:14px}
+.note b{color:var(--signal)}
+.nav{display:flex;justify-content:space-between;margin-top:18px}
+.nav button{border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:10px 22px;font:600 14px monospace;cursor:pointer;border-radius:2px}
+.nav button:disabled{opacity:.3;cursor:default}
+.time{font:12px monospace;color:var(--dim);text-align:center;margin-top:10px}
+</style></head><body>
+<h1>Setting up a project with agent-rails</h1>
+<div class="sub">What a new user actually sees. One command, ~5 minutes of assisted questions, nothing installs blindly. Click through (arrow keys work).</div>
+<div class="rail" id="rail"></div>
+<div id="steps">
+
+<div class="step"><div class="bar"><span>start — one command, one question</span><span class="t">step 1 · start</span></div>
+<div class="term"><span class="sys">$</span> git clone https://github.com/dprvda/agent-rails && cd agent-rails
+<span class="sys">$</span> claude
+<span class="q">></span> /setup-pravda-skills
+
+<span class="act">◆ Reading your target project… found: my-shop-automation/</span>
+
+<span class="q">? Which AI coding tool(s) do you use?</span>
+  <span class="sys">why: the commit safety checks work with ANY tool (they run on git,
+  not inside the AI); Claude Code additionally gets live guards,
+  skills, and session memory · unsure? say "ask me" and I'll
+  interview you for this one</span>
+<span class="a">→ Claude Code, sometimes Cursor</span>
+
+<span class="act">◆ Then your standing rules live in ONE file: AGENTS.md — the
+  cross-tool standard both Cursor and Claude read (Claude via a
+  one-line bridge). I'll draft it in Andrej Karpathy's style: a short
+  numbered list of judgment rules (his own rules file reportedly cut
+  his AI's mistake rate from 11% to 3%). Kept under 200 lines,
+  because past that AIs start ignoring lines. You'll see the draft
+  and can keep it, slim it, or restructure it your way.</span></div>
+<div class="note">One command in. The tool question comes first because it decides the shape of everything: <b>AGENTS.md is the one canonical rules file</b>; git-level checks protect any harness.</div></div>
+
+<div class="step"><div class="bar"><span>interview — what you're building</span><span class="t">step 2 · goal</span></div>
+<div class="term"><span class="q">? What are you building? A few plain sentences: what it does and the goal.</span>
+  <span class="sys">why: this one answer shapes the whole setup — the rules, checks, and
+  the AI's standing instructions get tailored to what you build ·
+  unsure? say "ask me" and I'll interview you for this one</span>
+<span class="a">→ Pulls 12 supplier feeds nightly, normalizes prices, updates our
+  Shopify catalog. Mistakes cost real money on mispriced items.</span>
+
+<span class="act">◆ Sounds like a data pipeline (scraper + ETL). I'll tune everything
+  for that — correct me if it's really something else.</span>
+<span class="a">→ correct</span>
+
+<span class="q">? What 2-4 rules must NEVER be violated here?</span>
+  <span class="sys">why: these become hard guardrails the AI cannot talk itself past ·
+  example: "never touch live orders" · unsure? say "ask me" and I'll
+  interview you for this one</span>
+<span class="a">→ what do you mean exactly?</span>
+<span class="act">◆ Things where one mistake costs real money or data. From your
+  description I'd draft: 1) never push prices without the validation
+  report passing, 2) never delete supplier history tables. Keep,
+  edit, or add?</span>
+<span class="a">→ keep both</span></div>
+<div class="note">The user describes; <b>the kit classifies, drafts, and asks for a one-word confirm</b>. A vague answer is never rejected — "ask me" flips the interview around.</div></div>
+
+<div class="step"><div class="bar"><span>interview — the stack, proposed</span><span class="t">step 3 · stack</span></div>
+<div class="term"><span class="q">? Stack — for your data pipeline I propose the agent-native default:</span>
+  <span class="sys">Python (typed — the AI catches its own mistakes early) · a normal
+  always-on server, not "serverless" (AI work sessions run longer
+  than serverless allows) · Neon for the database · Apify for
+  scraping. Every pick passes one test: can an AI use it BY ITSELF —
+  official AI connection, simple key access, docs written for
+  machines?
+  Full reasoning + per-archetype tables: pravda.systems/blog/
+  agent-native-stack-what-to-standardize-on
+  (existing repos skip this — the stack is detected from your files)</span>
+  <span class="sys">1) take it  2) name your own  3) decide later — the stack helpers
+  are optional and activate any time by re-running this setup ·
+  unsure? say "ask me" and I'll interview you for this one</span>
+<span class="a">→ 1</span></div>
+<div class="note">The kit already knows what they're building, so it <b>leads with the proposal</b> — one keystroke for the common case, a link to the full study for the curious.</div></div>
+
+<div class="step"><div class="bar"><span>interview — session memory (opt-in)</span><span class="t">step 4 · memory</span></div>
+<div class="term"><span class="q">? This looks like a months-long project. Want the memory system?
+  First, what it actually solves:</span>
+  <span class="sys">the AI's memory is WIPED between sessions — tomorrow it remembers
+  nothing, and people burn 10-15 min per session re-explaining their
+  own project. Fix, part 1: your project's knowledge lives in a few
+  short docs, and every new session the AI reads them automatically
+  first — like an employee reading the team wiki before the workday.
+  Part 2: docs lie over time (code changes, the doc doesn't, the AI
+  trusts the lie and breaks things) — so at every session HANDOFF a
+  check compares docs to the code that changed, and holds the wrap-up
+  until the docs are fixed. THE AI FIXES THEM, not you. Your whole
+  job: occasionally answer "update the doc or acknowledge the drift?"
+  While working, the AI also keeps live progress notes that survive
+  crashes and restarts.</span>
+  <span class="sys">FULL / memory-only (no doc-checks) / off — a weekend script doesn't
+  need this; activatable later · unsure? say "ask me" and I'll
+  interview you for this one</span>
+<span class="a">→ FULL — this one's going to run for months</span></div>
+<div class="note">Explained as <b>the story</b> (amnesia → wiki → lying docs → handoff check), asked as a real choice, honest that short projects should say no. The mechanism names never reach the user.</div></div>
+
+<div class="step"><div class="bar"><span>interview — a separate AI judge (opt-in)</span><span class="t">step 5 · judge</span></div>
+<div class="term"><span class="q">? Do you want a separate AI judge — a second, independent AI that
+  reviews every commit before it lands?</span>
+  <span class="sys">why: the AI that wrote the code is a bad judge of its own work (it
+  rubber-stamps itself). A different model reviewing each commit
+  catches what the author-AI misses — using your project rules from
+  step 2 as its checklist. It can BLOCK bad commits or just warn ·
+  unsure? say "ask me" and I'll interview you for this one</span>
+  <span class="sys">1) yes, free judge — NVIDIA's endpoint, one key, ~2 min signup
+  2) yes, my own AI provider   3) no judge (checks still run,
+     just without the AI reviewer — addable later)</span>
+<span class="a">→ 1</span>
+
+<span class="q">? And how hard should all checks push back?</span>
+  <span class="sys">STRICT — bad commits are blocked · STANDARD — the judge warns,
+  hard safety checks still block · LIGHT — only secrets + dangerous
+  commands are blocked · changeable any time · unsure? say "ask me"</span>
+<span class="a">→ STANDARD</span>
+
+<span class="act">◆ I wrote .env for you (never enters this chat, never committed):
+
+    LLM_JUDGE_API_KEY=        ← paste your key here
+    LLM_JUDGE_BASE_URL=https://integrate.api.nvidia.com
+    LLM_JUDGE_MODEL=mistralai/mistral-medium-3.5-128b
+
+  Get the key: build.nvidia.com → any model → "Get API Key" (free).
+  Open .env in any editor, paste after the "=", save. Until then
+  every AI-judge check quietly passes; verify later with the
+  self-test command in your cheatsheet.</span></div>
+<div class="note">The judge is <b>asked as a want-this question with the why</b> (an author is a bad judge of its own work), and the secret <b>never passes through the chat</b> — a prefilled template plus exact instructions.</div></div>
+
+<div class="step"><div class="bar"><span>interview — small decisions, all proposed</span><span class="t">step 6 · details</span></div>
+<div class="term"><span class="q">? Commit labels — I derived these from your folders. Edit?</span>
+  <span class="sys">why: every commit gets a label like fix(feeds): so history stays
+  searchable · keeping my proposal is fine · unsure? say "ask me"</span>
+  <span class="sys">proposed: feeds | catalog | validation | db | docs | ci | meta</span>
+<span class="a">→ keep, add "pricing"</span>
+
+<span class="q">? Should the AI connect to your GitHub?</span>
+  <span class="sys">why: lets it read and manage issues and pull requests directly ·
+  "no" is safe, addable later · unsure? say "ask me"</span>
+<span class="a">→ yes</span>
+
+<span class="q">? Will multiple AI sessions work here in parallel?</span>
+  <span class="sys">why: parallel AI workers need their own separate working copies so
+  they never overwrite each other · "no idea yet" is a valid answer ·
+  unsure? say "ask me"</span>
+<span class="a">→ yes, probably</span>
+<span class="act">◆ Noted — I'll add the parallel-work rules to AGENTS.md (each worker
+  in its own copy; shared files like migrations stay with the main
+  session only).</span></div>
+<div class="note">Labels derived from the real repo, integrations opt-in, and the parallel answer quietly configures the isolation rules — <b>the lessons are in the system</b>, not homework for the user.</div></div>
+
+<div class="step"><div class="bar"><span>interview — skills: the workflows your AI masters</span><span class="t">step 7 · skills</span></div>
+<div class="term"><span class="q">? Skills — which expert workflows should your AI carry?</span>
+  <span class="sys">why: skills are saved expert procedures the AI applies on its own —
+  how to test, how to debug, how to run parallel work. They shape the
+  QUALITY of everything it builds here, so this choice matters as
+  much as the stack. Fewer is stronger (past ~12 the AI starts
+  grabbing the wrong one). Based on your answers I propose:</span>
+  <span class="sys">from the kit, for a data pipeline with parallel workers:
+  [x] tdd                    — the AI writes a test before code, so bugs
+                               are caught the moment they're made
+  [x] systematic-debugging   — when something breaks, it finds the real
+                               cause instead of patching the symptom
+  [x] subagent-driven-dev    — several AI workers build parts in parallel
+                               without stepping on each other (you said yes)
+  [x] receiving-code-review  — the AI takes criticism properly: verifies
+                               feedback before acting, never flatters
+  [x] handoff + compact-docs — saves progress notes so tomorrow's session
+                               continues exactly where today's stopped
+  [ ] grill-me, zoom-out, to-issues — question a plan hard / see the big
+                               picture / split work into tickets — add later
+  vetted third-party (license-checked, read file-by-file by us):
+  [x] ccusage                — shows what your AI usage really costs
+  [ ] superpowers            — a strict senior-engineer working style for
+                               the AI (adds a small constant overhead)
+  [ ] visual-eyes            — lets the AI look at screenshots of your app
+                               and fix visuals (skipped: no UI here)
+  (proposing 9 of 33 in the catalog — the rest don't fit this project.
+  Browse: .claude/dprvda-kit/skills-catalog.md · the full study:
+  pravda.systems/blog/run-parallel-ai-coding-agents-without-babysitting)
+  · unsure? say "ask me" and I'll interview you for this one</span>
+<span class="a">→ confirm</span></div>
+<div class="note">Skills are <b>first-class, explained like the stack</b>: what they are, why fewer is stronger, every line an outcome a newbie understands, filtered openly from the full 33-entry researched catalog.</div></div>
+
+<div class="step"><div class="bar"><span>the full manifest — nothing installs blindly</span><span class="t">step 8 · install</span></div>
+<div class="term"><span class="q">? Here is EVERYTHING that will land on your machine. Confirm?</span>
+
+  <span class="sys">INTO YOUR PROJECT (copied from this kit — all plain text, readable):
+  .claude/dprvda-kit/       the safety layer: commit checks + live
+                            guards (~15 small Python files)
+  .claude/skills/ (7)       the workflows you just confirmed
+  AGENTS.md                 your standing rules, Karpathy-style draft
+                            you approved (+ a one-line Claude bridge)
+  docs/STACK.md             your stack guide + AI best practices
+  CHEATSHEET.md             how to work here, personalized
+  .env (gitignored)         judge prefilled, key left blank for you
+  .mcp.json                 the GitHub connection you said yes to
+  kit.config.json           your answers + kit version → clean updates</span>
+
+  <span class="sys">FROM EXTERNAL SOURCES (their own repos — origin, license, location, why):
+  ccusage                   npm global CLI · github.com/ccusage/ccusage
+                            (MIT) · reads your local usage logs, nothing
+                            leaves your machine · why: cost visibility
+  superpowers               NOT installed — you left it unchecked.
+                            If ever: one command, installs user-level
+                            to ~/.claude (affects all your projects)</span>
+
+  <span class="sys">NOTHING ELSE. No telemetry, no network calls except the judge API
+  you configured. Audit any file, any time.</span>
+<span class="a">→ proceed</span>
+
+<span class="act">✔ project files written · ✔ commit labels patched · ✔ ccusage
+  installed · ✔ checks armed — live on every commit from now on</span></div>
+<div class="note">The complete list <b>with origins, licenses, and install locations before anything executes</b> — kit files vs external fetches clearly separated, and even the NOT-installed items shown.</div></div>
+
+<div class="step"><div class="bar"><span>done — the cheatsheet</span><span class="t">step 9 · done</span></div>
+<div class="term"><span class="act">✔ CHEATSHEET.md written — personalized for THIS project:</span>
+<span class="sys">  · the working rhythm: explore in plan mode → plan → build → commit
+  · your parallel-work commands (one isolated copy per AI worker)
+  · cost levers: cheap models for routine work, spending caps on
+    anything unattended, ccusage weekly
+  · what each check blocks and how to fix it properly (never bypass)
+  · your judge: where the key lives, the self-test, how to rotate it
+  · the session rhythm: a new session already knows the state;
+    end of day → /handoff packages it for tomorrow</span>
+
+<span class="act">Setup complete. Open a new Claude session in my-shop-automation/
+and just start working — the rails are in.</span></div>
+<div class="note"><b>Total: ~10 assisted answers, ~5 minutes.</b> Re-running later reads kit.config.json, re-asks only what changed, never clobbers hand edits — and can activate anything deferred today.</div></div>
+
+</div>
+<div class="nav"><button id="prev">← back</button><button id="next">next →</button></div>
+<div class="time" id="tick"></div>
+<script>
+const steps=[...document.querySelectorAll('.step')],rail=document.getElementById('rail');
+const names=['start','goal','stack','memory','judge','details','skills','install','done'];let i=0;
+names.forEach((n,k)=>{const b=document.createElement('button');b.textContent=(k+1)+' '+n;b.onclick=()=>go(k);rail.appendChild(b)});
+function go(k){i=k;steps.forEach((s,j)=>s.classList.toggle('on',j===k));
+ [...rail.children].forEach((b,j)=>b.classList.toggle('on',j===k));
+ document.getElementById('prev').disabled=k===0;document.getElementById('next').disabled=k===steps.length-1;
+ document.getElementById('tick').textContent='step '+(k+1)+' of '+steps.length;}
+document.getElementById('prev').onclick=()=>go(Math.max(0,i-1));
+document.getElementById('next').onclick=()=>go(Math.min(steps.length-1,i+1));
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(Math.min(steps.length-1,i+1));if(e.key==='ArrowLeft')go(Math.max(0,i-1))});
+go(0);
+</script></body></html>

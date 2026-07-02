@@ -1,0 +1,157 @@
+{
+  "install.ps1": {
+    "mtime": 1781277034.2677283,
+    "ast_hash": "bbfbd29f3800c445a127c64b829be5e7",
+    "semantic_hash": "bbfbd29f3800c445a127c64b829be5e7"
+  },
+  "install.py": {
+    "mtime": 1781277034.2683854,
+    "ast_hash": "d9f2643fcd975cf3c7b46dcfb2053be3",
+    "semantic_hash": "d9f2643fcd975cf3c7b46dcfb2053be3"
+  },
+  "install.sh": {
+    "mtime": 1781277034.268897,
+    "ast_hash": "76a39abb9816d145efc28c2e926d9275",
+    "semantic_hash": "76a39abb9816d145efc28c2e926d9275"
+  },
+  "packs/python/gates/check_python_lint.py": {
+    "mtime": 1781277034.2704115,
+    "ast_hash": "aaa66a7f181c77316a0b2c757be4f91b",
+    "semantic_hash": "aaa66a7f181c77316a0b2c757be4f91b"
+  },
+  "packs/rust/gates/check_cargo_audit.py": {
+    "mtime": 1781277034.272412,
+    "ast_hash": "aefb5f5eb73077cdbfca43945b0e418c",
+    "semantic_hash": "aefb5f5eb73077cdbfca43945b0e418c"
+  },
+  "packs/rust/gates/check_cargo_vet.py": {
+    "mtime": 1781277034.273615,
+    "ast_hash": "e88aeb76d4937eb57433fb4336d4f8b5",
+    "semantic_hash": "e88aeb76d4937eb57433fb4336d4f8b5"
+  },
+  "template/.claude/dprvda-kit/gates/_git_mtime.py": {
+    "mtime": 1781277034.2783394,
+    "ast_hash": "fbfcd6ae7c9989f505e9bfe3ce7eaefa",
+    "semantic_hash": "fbfcd6ae7c9989f505e9bfe3ce7eaefa"
+  },
+  "template/.claude/dprvda-kit/gates/apply_tag_trailer.py": {
+    "mtime": 1781277034.2783394,
+    "ast_hash": "6fa5135b2465483fb7ad50f741bdc8dc",
+    "semantic_hash": "6fa5135b2465483fb7ad50f741bdc8dc"
+  },
+  "template/.claude/dprvda-kit/gates/check_doc_freshness.py": {
+    "mtime": 1781277034.2793446,
+    "ast_hash": "6824cf230ea7ec310fbc270d9092936d",
+    "semantic_hash": "6824cf230ea7ec310fbc270d9092936d"
+  },
+  "template/.claude/dprvda-kit/gates/check_file_reason.py": {
+    "mtime": 1781277034.2793446,
+    "ast_hash": "99d951be6176ca5b13dced30334d0d04",
+    "semantic_hash": "99d951be6176ca5b13dced30334d0d04"
+  },
+  "template/.claude/dprvda-kit/gates/check_links.py": {
+    "mtime": 1781277034.2803435,
+    "ast_hash": "21c30f8237cdb1ae43590e637166d57f",
+    "semantic_hash": "21c30f8237cdb1ae43590e637166d57f"
+  },
+  "template/.claude/dprvda-kit/gates/check_md_size.py": {
+    "mtime": 1781277034.2803435,
+    "ast_hash": "91c4d773d6d475f2157c422bb4c7bb74",
+    "semantic_hash": "91c4d773d6d475f2157c422bb4c7bb74"
+  },
+  "template/.claude/dprvda-kit/gates/critic_llm.py": {
+    "mtime": 1781277034.282348,
+    "ast_hash": "165c2ab2426858b41ec5517f8aab87de",
+    "semantic_hash": "165c2ab2426858b41ec5517f8aab87de"
+  },
+  "template/.claude/dprvda-kit/gates/critic_llm_commit.py": {
+    "mtime": 1781277034.2828586,
+    "ast_hash": "43c1cef52fa5539621424cab0587600a",
+    "semantic_hash": "43c1cef52fa5539621424cab0587600a"
+  },
+  "template/.claude/dprvda-kit/gates/refresh_history.py": {
+    "mtime": 1781277034.2843874,
+    "ast_hash": "fb4fbbffd99ae461e66f69b63f467db9",
+    "semantic_hash": "fb4fbbffd99ae461e66f69b63f467db9"
+  },
+  "template/.claude/dprvda-kit/gates/refresh_issues.py": {
+    "mtime": 1781277034.2849002,
+    "ast_hash": "2bf01fb2ccd3e3a5967f2844460d3d23",
+    "semantic_hash": "2bf01fb2ccd3e3a5967f2844460d3d23"
+  },
+  "template/.claude/dprvda-kit/gates/run_gates_parallel.py": {
+    "mtime": 1781277034.2854173,
+    "ast_hash": "de11dc9870e12ef515aa77b7c7b4eed7",
+    "semantic_hash": "de11dc9870e12ef515aa77b7c7b4eed7"
+  },
+  "template/.claude/dprvda-kit/gates/test_check_doc_freshness.py": {
+    "mtime": 1781277034.2854173,
+    "ast_hash": "bb44b35857cb7984a69cdbe1a481ba7b",
+    "semantic_hash": "bb44b35857cb7984a69cdbe1a481ba7b"
+  },
+  "template/.claude/dprvda-kit/hooks/block-dangerous-git.py": {
+    "mtime": 1781277034.2864265,
+    "ast_hash": "ce6b963d12569199bf7d9fa4c8b19362",
+    "semantic_hash": "ce6b963d12569199bf7d9fa4c8b19362"
+  },
+  "template/.claude/dprvda-kit/hooks/check-script-launch.py": {
+    "mtime": 1781277034.2864265,
+    "ast_hash": "cffe600d48fc10232af7dabff6f657e1",
+    "semantic_hash": "cffe600d48fc10232af7dabff6f657e1"
+  },
+  "template/.claude/dprvda-kit/hooks/nudge-to-foreground-git.py": {
+    "mtime": 1781277034.2874265,
+    "ast_hash": "ae732c389e71b3e18b3744ff00c14158",
+    "semantic_hash": "ae732c389e71b3e18b3744ff00c14158"
+  },
+  "template/.claude/dprvda-kit/hooks/nudge-to-github-mcp.py": {
+    "mtime": 1781277034.2879627,
+    "ast_hash": "783c5f9f375e39a9c44342a4ea2edee6",
+    "semantic_hash": "783c5f9f375e39a9c44342a4ea2edee6"
+  },
+  "template/.claude/dprvda-kit/hooks/nudge-to-serena.py": {
+    "mtime": 1781277034.2879627,
+    "ast_hash": "5919a55f007679f57f03bafece0d316d",
+    "semantic_hash": "5919a55f007679f57f03bafece0d316d"
+  },
+  "template/.claude/dprvda-kit/hooks/remind-claude-md.py": {
+    "mtime": 1781277034.2891054,
+    "ast_hash": "2f4eb05bac4b448026d103d62c3b644a",
+    "semantic_hash": "2f4eb05bac4b448026d103d62c3b644a"
+  },
+  "template/.claude/dprvda-kit/hooks/test_block_dangerous_git.py": {
+    "mtime": 1781277034.2891054,
+    "ast_hash": "fa2b8418293a13c8741a68cbe2d5b5d2",
+    "semantic_hash": "fa2b8418293a13c8741a68cbe2d5b5d2"
+  },
+  "template/.claude/dprvda-kit/inject_context_docs.py": {
+    "mtime": 1781277034.2901053,
+    "ast_hash": "46f17f4c92cbd76a01d6a3ac35a0ec17",
+    "semantic_hash": "46f17f4c92cbd76a01d6a3ac35a0ec17"
+  },
+  "template/.claude/settings.json": {
+    "mtime": 1781277034.2901053,
+    "ast_hash": "f0b7847422ca4ef9881bf402a95b9df4",
+    "semantic_hash": "f0b7847422ca4ef9881bf402a95b9df4"
+  },
+  "template/.mcp.json": {
+    "mtime": 1781277034.301716,
+    "ast_hash": "62f8e74a5127088d77767097807b3614",
+    "semantic_hash": "62f8e74a5127088d77767097807b3614"
+  },
+  "uninstall.ps1": {
+    "mtime": 1781277034.3042336,
+    "ast_hash": "3f560e34f69941b962282c7fe4692fd3",
+    "semantic_hash": "3f560e34f69941b962282c7fe4692fd3"
+  },
+  "uninstall.py": {
+    "mtime": 1781277034.3052423,
+    "ast_hash": "9ef065f7dff052bdee6d94463d5be656",
+    "semantic_hash": "9ef065f7dff052bdee6d94463d5be656"
+  },
+  "uninstall.sh": {
+    "mtime": 1781277034.3052423,
+    "ast_hash": "176e7ad938b9106e0302f0acbfbbab44",
+    "semantic_hash": "176e7ad938b9106e0302f0acbfbbab44"
+  }
+}
