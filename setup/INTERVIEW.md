@@ -184,7 +184,7 @@ Batch B (the machinery):
    hands-on eval validated (kit skills, vetted third-party, parallel/overnight helpers,
    collections). Always tell the user the filter math ("proposing 8 of 33 — the rest didn't fit
    this project; full catalog: skills-catalog.md; the full study behind the menu:
-   pravda.systems/blog/run-parallel-ai-coding-agents-without-babysitting"). Under the ~12 ceiling
+   pravda.systems/blog/turn-drunk-ai-agents-sober"). Under the ~12 ceiling
    (past ~12 similar skills agents pick the wrong one). Kit skills matched to the archetype and
    answers (e.g. data pipeline + parallel agents → tdd, handoff, compact-docs; unsure planning →
    grill-me), plus the vetted third-party menu (Stage 3) folded in with license + cost notes.

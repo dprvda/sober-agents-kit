@@ -46,7 +46,7 @@ Rules that live in machinery hold.
 That's this kit: **the sober adult in the room**, so you don't have to be.
 
 It wasn't guessed together. It's built on two published studies — one on how expert operators
-actually run coding agents ([967 sources](https://pravda.systems/blog/run-parallel-ai-coding-agents-without-babysitting)),
+actually run coding agents ([967 sources](https://pravda.systems/blog/turn-drunk-ai-agents-sober)),
 one on which platforms and tools agents can genuinely drive ([971 sources](https://pravda.systems/blog/agent-native-stack-what-to-standardize-on)) —
 plus hands-on installs of every major community pack (several of which turned out to have
 silently broken hooks; the survivors are in [the catalog](template/.agent-kit/skills-catalog.md)).
@@ -208,7 +208,7 @@ troubleshooting: [`INSTALL.md`](INSTALL.md). Uninstall: `python uninstall.py --t
 
 The two studies this kit is distilled from, both free:
 
-- [Run parallel AI coding agents without babysitting them](https://pravda.systems/blog/run-parallel-ai-coding-agents-without-babysitting) —
+- [Run parallel AI coding agents without babysitting them](https://pravda.systems/blog/turn-drunk-ai-agents-sober) —
   the operator playbook (967 sources): worktrees, hooks, budgets, overnight lanes, and the
   origin story of these exact gates.
 - [The agent-native stack](https://pravda.systems/blog/agent-native-stack-what-to-standardize-on) —
