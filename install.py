@@ -236,14 +236,31 @@ def strip_claude_live_layer(dst: Path, kit_name: str) -> None:
     if adapter.exists():
         shutil.rmtree(adapter)
     (dst / ".mcp.json").unlink(missing_ok=True)  # Claude's MCP config file — nothing reads it
-    # cut the fenced Claude blocks out of AGENTS.md (the link gate would rightly flag them)
-    agents = dst / "AGENTS.md"
-    if agents.exists():
-        import re
-        s = agents.read_text(encoding="utf-8")
-        s = re.sub(r"<!-- claude-adapter-start -->.*?<!-- claude-adapter-end -->\n?", "", s, flags=re.S)
-        agents.write_text(s, encoding="utf-8")
     log("Claude Code adapter omitted (no 'claude' in --tools); git-level gates + session kept")
+
+
+def resolve_agents_md(dst: Path, tools: set[str]) -> None:
+    # AGENTS.md ships with fenced conditional blocks; they are resolved ONCE here, per the
+    # confirmed tool set, so the standing file that every session re-reads carries ZERO
+    # "if your tool is X" prose. The conditionals live in the interview + this function.
+    import re
+    agents = dst / "AGENTS.md"
+    if not agents.exists():
+        return
+    s = agents.read_text(encoding="utf-8")
+    def cut(block: str, text: str) -> str:
+        return re.sub(rf"<!-- {block}-start -->.*?<!-- {block}-end -->\n?", "", text, flags=re.S)
+    def unfence(block: str, text: str) -> str:
+        return text.replace(f"<!-- {block}-start -->\n", "").replace(f"<!-- {block}-end -->\n", "")
+    if "claude" not in tools:
+        s = cut("claude-adapter", s)          # nothing reads the adapter README
+    else:
+        s = unfence("claude-adapter", s)
+    if tools == {"claude"}:
+        s = cut("non-claude-session", s)      # session spine auto-injects; the instruction is waste
+    else:
+        s = unfence("non-claude-session", s)
+    agents.write_text(s, encoding="utf-8")
 
 
 def install_user_skills(dst: Path, tools: set[str]) -> None:
@@ -331,6 +348,7 @@ def main() -> int:
         size_sessionstart(dst, args.kit_name)
     else:
         strip_claude_live_layer(dst, args.kit_name)
+    resolve_agents_md(dst, tools)
     if args.install_user_skills:
         install_user_skills(dst, tools)
     if not args.no_precommit:

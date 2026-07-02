@@ -1,17 +1,16 @@
 # __PROJECT_NAME__ — agent rules
 
-The ONE instruction file, read natively by Codex / Cursor / OpenClaw / Hermes and imported by
-Claude Code via the one-line CLAUDE.md. Rules only. Machinery lives in [`.agent-kit/`](.agent-kit/),
-its mechanics in [`.agent-kit/gates/README.md`](.agent-kit/gates/README.md). Keep this file short:
-past ~150 lines, agents start ignoring lines.
+Rules only. Machinery: [`.agent-kit/`](.agent-kit/) · gate mechanics:
+[`.agent-kit/gates/README.md`](.agent-kit/gates/README.md). Keep this file short; link, don't duplicate.
 
 <!-- FILL IN: one or two sentences on what this project IS, so a fresh session is oriented. -->
 
+<!-- non-claude-session-start -->
 ## 0. First action, every session
 
 Run `python .agent-kit/session/inject_context_docs.py --all` and read it before anything else:
-the project spine (key docs, live progress, recent state). Claude Code does this automatically;
-every other agent does it as this file's first instruction.
+the project spine (key docs, live progress, recent state).
+<!-- non-claude-session-end -->
 
 ## 1. Think before coding
 
@@ -49,7 +48,6 @@ every other agent does it as this file's first instruction.
 - NEVER `--no-verify`, never disable a test, never `assert True`, never swallow an exception.
 - The AI judge may prepend `=== LLM_REVIEW_BLOCK ===` to a file: fix the listed lines, then
   remove the block ([protocol](.agent-kit/gates/README.md)).
-- Force-push and remote branch deletion are blocked at the push stage, for everyone.
 
 ## 6. Never-violate project rules
 
@@ -58,11 +56,9 @@ every other agent does it as this file's first instruction.
 
 ## Pointers, not prose
 
-- Skills (saved procedures, cross-tool SKILL.md): [`.agents/skills/`](.agents/skills/) — invoke by name.
-- Commit style: `.gitmessage` (Conventional Commits; the commit-msg gate enforces it).
+- Skills (saved procedures): invoke by name. Commit style: `.gitmessage`.
 - `archive/` is out of context: don't read it unless named. Deadlines are deadlines, not scopes;
   never auto-pause a long run.
 <!-- claude-adapter-start -->
-- Claude Code live hooks (dangerous-git blocker, judge-on-launch, soft nudges):
-  [`.agent-kit/adapters/claude/README.md`](.agent-kit/adapters/claude/README.md).
+- Live hooks: [`.agent-kit/adapters/claude/README.md`](.agent-kit/adapters/claude/README.md).
 <!-- claude-adapter-end -->

@@ -80,6 +80,11 @@ Batch A (the project):
    memory work with every tool (they run on git and plain files, not inside the AI); the live
    in-session hooks are Claude Code's today. The answer becomes the installer's `--tools` list;
    offer `--install-user-skills` when OpenClaw/Hermes is in the mix.
+   **THE NO-CONDITIONALS RULE (binding): the installed AGENTS.md carries ZERO "if your tool is
+   X" prose — every session would re-read that waste forever. All tool routing lives HERE (this
+   playbook) and in the installer's fenced-marker resolution (`resolve_agents_md`): the file is
+   REWRITTEN once for the confirmed tool set at install, and rewritten again if the tools change
+   on a re-run. When you hand-edit AGENTS.md later, keep it conditional-free the same way.**
 1. **What are you building? A few plain sentences: what it does and the goal.** ONE question,
    two jobs: (a) DERIVE the archetype yourself (SaaS web app / data pipeline / content-video
    pipeline / API service / other) and confirm it in one line ("sounds like a data pipeline —
