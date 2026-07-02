@@ -72,10 +72,29 @@ SUBJECT_MAX = 99
 REQUIRE_TAG_TRAILER = False
 BODY_REQUIRED_AT_LINES = 50
 
-# Judge endpoint — OpenAI-compatible chat-completions, env-driven.
-BASE_URL = os.environ.get("LLM_JUDGE_BASE_URL", "https://api.deepseek.com").rstrip("/")
+# Judge endpoint — OpenAI-compatible chat-completions. KEY, BASE_URL and MODEL
+# all fall back to the repo .env (issue #5: env-only BASE_URL/MODEL silently
+# pointed an NVIDIA-keyed judge at the DeepSeek default and it soft-passed).
+
+
+def _dotenv_get(name: str) -> str | None:
+    env = REPO_ROOT / ".env"
+    if not env.exists():
+        return None
+    for line in env.read_text(encoding="utf-8", errors="ignore").splitlines():
+        if line.startswith(name + "="):
+            return line.split("=", 1)[1].strip().strip('"').strip("'") or None
+    return None
+
+
+def _cfg(name: str, default: str | None = None) -> str | None:
+    v = os.environ.get(name, "").strip()
+    return v or _dotenv_get(name) or default
+
+
+BASE_URL = _cfg("LLM_JUDGE_BASE_URL", "https://api.deepseek.com").rstrip("/")
 JUDGE_URL = f"{BASE_URL}/v1/chat/completions"  # /v1 matches critic_llm.py — one URL shape for any OpenAI-compatible host
-JUDGE_MODEL = os.environ.get("LLM_JUDGE_MODEL", "deepseek-chat")
+JUDGE_MODEL = _cfg("LLM_JUDGE_MODEL", "deepseek-chat")
 TIMEOUT_S = 25
 
 
@@ -97,15 +116,7 @@ TAG_TRAILER_LOOSE_RE = re.compile(r"^Tag:\s*(\S+).*$", re.MULTILINE)
 
 
 def load_api_key() -> str | None:
-    k = os.environ.get("LLM_JUDGE_API_KEY", "").strip()
-    if k:
-        return k
-    env = REPO_ROOT / ".env"
-    if env.exists():
-        for line in env.read_text(encoding="utf-8", errors="ignore").splitlines():
-            if line.startswith("LLM_JUDGE_API_KEY="):
-                return line.split("=", 1)[1].strip().strip('"').strip("'")
-    return None
+    return _cfg("LLM_JUDGE_API_KEY")
 
 
 def unavailable_pass(reason: str) -> int:

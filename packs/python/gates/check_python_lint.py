@@ -43,9 +43,23 @@ def main() -> int:
         )
         return 0
 
-    # sys.argv[1:] are the staged file paths passed by pre-commit.
-    # Fall back to `.` (whole tree) when invoked directly.
-    targets: list[str] = sys.argv[1:] if len(sys.argv) > 1 else ["."]
+    # sys.argv[1:] are file paths when a caller passes them. The kit's
+    # dispatcher (run_gates_parallel.py) passes none — in that case lint ONLY
+    # the STAGED .py files, never the whole tree (issue #6: whole-tree ruff
+    # blocked every commit on files the commit never touched).
+    targets: list[str] = sys.argv[1:]
+    if not targets:
+        try:
+            out = subprocess.run(
+                ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
+                capture_output=True, encoding="utf-8", errors="replace",
+                cwd=ROOT, check=False,
+            ).stdout or ""
+        except OSError:
+            out = ""
+        targets = [f for f in out.splitlines() if f.endswith(".py") and (ROOT / f).exists()]
+        if not targets:
+            return 0  # nothing staged to lint
 
     try:
         result = subprocess.run(

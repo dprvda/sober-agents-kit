@@ -158,7 +158,6 @@ their protection is the git-level layer above — same rules, one stage later. S
 |---|---|
 | `sober-setup` | re-run the interview any time to audit or update the setup |
 | `handoff` | saves verified progress notes so tomorrow's session continues exactly where today's stopped |
-| `graphify` | my standalone code-knowledge-graph tool, bundled for convenience: builds a queryable map of the whole codebase, one question replaces reading ten files |
 | `tdd` | a test before code, so bugs are caught the moment they're made |
 | `grill-me` | interrogates your plan hard before you build the wrong thing |
 | `to-issues` / `compact-docs` / `audit-structure` / `zoom-out` / `caveman` / `write-a-skill` | tickets from a plan · doc trimming · structure review · big-picture re-orient · terse mode · teach a new procedure |
@@ -168,8 +167,7 @@ The interview proposes ≤12 per project (past ~12 similar skills, agents pick t
 grades the vetted third-party packs (Superpowers, Planning with Files, visual-eyes, ccusage, …).
 
 **Bundling policy:** only my own skills ship inside this repo. Every third-party skill the
-interview proposes (including the three Superpowers workflows we run daily:
-systematic-debugging, subagent-driven-development, receiving-code-review) is installed **from
+interview proposes (including the three Superpowers workflows and the graphify code-graph tool we run daily) is installed **from
 its original source** at setup, pinned to a commit SHA — listed here, never copied here.
 
 ### The framework fact-sheets

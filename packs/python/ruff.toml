@@ -1,0 +1,4 @@
+# Shipped by the agent-kit python pack: ruff lints YOUR code, never the kit's
+# machinery or vendored skills (issue #6 — kit scripts under default rules
+# blocked every commit).
+extend-exclude = [".agent-kit", ".agents", ".claude"]

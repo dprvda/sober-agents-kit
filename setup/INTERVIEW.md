@@ -24,13 +24,16 @@ how you ask questions: use your structured multiple-choice question tool if you 
 (Claude Code: AskUserQuestion); otherwise ask the same questions as plain numbered chat messages,
 one batch at a time.
 
-**STEP ZERO B — READ BEFORE ANYTHING (your training data is stale):** read
-`template/.agent-kit/frameworks/INDEX.md` and the framework files matching any stack
-under discussion, plus `template/.agent-kit/skills-catalog.md` and the relevant
-`template/.agent-kit/stack-guides/*.md`. These carry the verified 2026-07 state of every
-tool (breaking changes, official AI connections, real incidents) from a 971-source study — the
-tools shipped breaking changes AFTER your training. You advise the user FROM these files, never
-from memory.
+**STEP ZERO B — READ BEFORE ANYTHING (YOUR OWN training data is stale — yours, the agent's,
+never the user's):** read `template/.agent-kit/frameworks/INDEX.md` and the framework files
+matching any stack under discussion, plus `template/.agent-kit/skills-catalog.md` and the
+relevant `template/.agent-kit/stack-guides/*.md`. These carry the verified 2026-07 state of
+every tool (breaking changes, official AI connections, real incidents) from a 971-source study —
+the tools shipped breaking changes AFTER your training cutoff. You advise the user FROM these
+files, never from memory. **And when you explain this to the user, attribute the staleness to
+yourself** ("MY training data is months old, so I'm proposing from the kit's verified 2026-07
+guide"), never to them — "your training data is stale" aimed at a human is wrong and insulting
+(issue #1).
 
 **THE PER-TOOL MATRIX (verified 2026-07 — what each harness can actually run):**
 
@@ -248,13 +251,14 @@ tested community skills — read SKILL.md before installing, pin to a commit SHA
 
 | Pack | What it earns | Install |
 |---|---|---|
+| graphify (safishamsi) | a queryable code knowledge graph — one query replaces reading ten files | CLI: `uv tool install graphifyy` (PyPI); skill from github.com/safishamsi/graphify, pin a SHA |
 | Superpowers (obra) | full spec→TDD→subagent-review methodology | `claude plugins:install superpowers` (check its license page first) |
 | Planning with Files | plan-first + save-findings-every-2-actions + session recovery | via `npx skills add` / its repo README |
 | Anthropic Frontend Design | escape "Inter font, purple gradient" defaults | plugin marketplace |
 | visual-eyes | Playwright screenshots so the AI sees its own UI | its repo README |
 | ccusage | offline cost reports from local JSONL, zero API calls | `npm install -g ccusage` |
 
-## Stage 4 — emit the cheatsheet
+## Stage 4 — emit the cheatsheet, explain the FULL toolset, clean up
 
 Write `CHEATSHEET.md` at the target root, personalized by the answers AND the tool list. Contents
 (adapt, don't copy blindly): the four-phase loop (explore/plan first → implement → commit; skip
@@ -262,9 +266,37 @@ planning only when the diff fits one sentence); the placement rule (gate enforce
 / rules file routes); the worktree commands (if parallel); the cost levers for their tool (on
 Claude Code: `CLAUDE_CODE_SUBAGENT_MODEL=haiku`, `--max-budget-usd` on every headless run,
 `.claudeignore`, `/usage` weekly); the escape hatches (`--ack-no-drift`, `# SECRET_OK:`,
-`# REASON:`); what each installed gate blocks and how to fix (never bypass); which layers are
-live for which of their tools (the honest matrix row); and the judge's provider + how to rotate
-its key.
+`# REASON:`, `AGENT_KIT_ALLOW_FORCE_PUSH=1`); what each installed gate blocks and how to fix
+(never bypass); which layers are live for which of their tools (the honest matrix row); and the
+judge's provider + how to rotate its key. Then verify the judge actually RUNS (not just
+soft-passes): once the user fills the key, `python .agent-kit/gates/critic_llm.py --files <any .py>
+--no-mutate` must produce a verdict, not an unavailable-pass.
+
+Four sections are MANDATORY in the cheatsheet (each burned a real user when missing):
+
+- **Session memory, explained (issue #10).** Which files auto-load into every fresh session on
+  Claude Code (docs/ + the progress ledger via the SessionStart chunks — this is WHY STACK.md's
+  practices "follow" the AI without re-explaining); how to add/remove what loads (a doc in
+  `docs/` is in; adding large docs costs context every session); the non-Claude equivalent
+  (rule 0: the agent runs `inject_context_docs.py --all` on demand); and that auto-loaded docs
+  are exactly the ones the freshness gate expects to stay true.
+- **Doc freshness, taught (issue #9).** Plain words: docs rot, the AI then trusts a wrong doc,
+  so every authored doc declares its contract — `frozen_at: YYYY-MM-DD` (a dated snapshot, never
+  drift-checked) / `tracks_dir: [paths]` (a living doc that must move with the code it tracks) /
+  `derived_from:` (generated). Give the exact minimal frontmatter for adding a NEW doc that
+  passes the gate, note that enforcement happens at the session-wrap (handoff) commit so
+  mid-session commits never block, and name the escape (`--ack-no-drift PATH --reason '…'`,
+  legitimate only for pure mtime ripples after actually reading the doc).
+- **ALL active capability, not just the kit (issue #8).** Detect and list add-ons already live
+  in their environment: globally-installed plugins/skills (e.g. `~/.claude/plugins/`,
+  `~/.claude/skills/`, `~/.agents/skills/`) plus everything installed from source during this
+  setup. One line each: what it does, how to invoke it. The user leaves knowing their FULL
+  toolset — a globally-installed Superpowers counts even though this kit never bundles it.
+- **Cleanup (issue #7).** Close by proposing to tidy: the kit clone can be deleted (say plainly
+  it is only needed again for updates, and the installed `sober-setup` stub re-clones it);
+  remove any temp/test files made during verification; note that `.git-history.md`,
+  `.gh-issues.md`, and `.llm-review/` are gitignored ephemerals that regenerate. Leave the
+  target repo as the only artifact, in its intended state. Propose, never delete silently.
 
 ## Auditing an existing install (the update path)
 

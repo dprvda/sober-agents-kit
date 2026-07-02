@@ -17,11 +17,11 @@ jargon. Grades: ★ = installed + tested by us hands-on · ✓ = read file-by-fi
 | audit-structure | reviews whether folders/names still make sense |
 | caveman | ultra-short answers mode (saves money on long sessions) |
 | write-a-skill | teach the AI a new repeatable procedure of your own |
-| graphify ★ | a STANDALONE tool that ships bundled with the kit: builds a map of your whole codebase the AI can query — one question replaces reading ten files; big saver on any codebase over ~30 files |
 
 ## Third-party — vetted (license-checked; install commands in the interview)
 | Pack | What it gives you | Grade / license |
 |---|---|---|
+| graphify (safishamsi) | builds a queryable map of your whole codebase — one question replaces reading ten files; big saver past ~30 files. CLI: `uv tool install graphifyy` (PyPI); skill from github.com/safishamsi/graphify, pin a SHA | ★ (we run it daily) |
 | superpowers (obra) | a strict senior-engineer working style: design first, test first, verify before claiming done. Its systematic-debugging, subagent-driven-development, and receiving-code-review skills are the three we run daily (★ hands-on). ALWAYS installed from obra's repo at setup, never bundled here | ★ MIT |
 | planning-with-files | the AI keeps a written plan + findings on disk and refuses to quit mid-phase; survives restarts | ✓ MIT |
 | ponytail | forces "does this code even need to exist?" before writing; measured ~54% less code | ✓ MIT |
@@ -42,7 +42,7 @@ jargon. Grades: ★ = installed + tested by us hands-on · ✓ = read file-by-fi
 ## Parallel-work & overnight helpers (propose only when the answers call for them)
 | Tool | What it gives you | Grade |
 |---|---|---|
-| ashu worktree skills | gives each parallel AI worker its own ports, database, and env files | ~ |
+| ashu worktree skills | per-worker ports, database, and env files — ONLY for tools WITHOUT native worktrees. On Claude Code do NOT propose this: `claude --worktree` / `isolation: worktree` is native, plus the AGENTS.md worktree ritual (issue #4; the pack also had no verifiable pinned source at eval time) | ~ |
 | claude-overnight (Fornace) | overnight runs that stop at 90% of your usage window and resume cleanly | ~ |
 | Ralph workflow | the simplest safe overnight loop: fresh memory each pass, hard iteration cap | ~ |
 | parallel-cc / Conductor.build | detect when two AI workers are about to collide on the same code | ~ |

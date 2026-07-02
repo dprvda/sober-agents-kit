@@ -906,6 +906,21 @@ def main(argv: list[str] | None = None) -> int:
     if args.ack_no_drift:
         return _handle_ack_no_drift(args.ack_no_drift, args.reason)
 
+    # Iterate-unburdened model (issue #2): ALL passes reconcile at the session-wrap
+    # commit (the one staging .claude/handoffs/handoff_*.md) -- a mid-session commit
+    # is never blocked on doc drift. Manual audit paths still run in full: --json,
+    # or AGENT_KIT_DOC_FRESHNESS_ALWAYS=1 to enforce on every commit.
+    if (
+        not args.json
+        and os.environ.get("AGENT_KIT_DOC_FRESHNESS_ALWAYS") != "1"
+        and not handoff_in_staged_commit(REPO_ROOT)
+    ):
+        print(
+            "[check_doc_freshness] no handoff staged -- doc drift reconciles at "
+            "session-wrap (pass; audit any time with --json)."
+        )
+        return 0
+
     folders, files = walk_repo(REPO_ROOT)
 
     # Shared mtime cache so check_freshness + check_tracks_dir don't

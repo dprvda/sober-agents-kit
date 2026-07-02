@@ -133,6 +133,10 @@ def install_pack(dst: Path, kit_name: str, pack: str, roster_entries: list[tuple
     gates_dst = kit_dir(dst, kit_name) / "gates"
     for g in pack_gates.glob("*.py"):
         shutil.copy2(g, gates_dst / g.name)
+    # pack-level config files (e.g. python's ruff.toml) land at the repo root, never clobbering
+    for cfg in (PACKS / pack).glob("*"):
+        if cfg.is_file() and cfg.name != "README.md" and not (dst / cfg.name).exists():
+            shutil.copy2(cfg, dst / cfg.name)
     # append roster entries to run_gates_parallel.py PHASE2_GATES
     disp = gates_dst / "run_gates_parallel.py"
     s = disp.read_text(encoding="utf-8")
@@ -348,6 +352,13 @@ def main() -> int:
         size_sessionstart(dst, args.kit_name)
     else:
         strip_claude_live_layer(dst, args.kit_name)
+    if tools == {"claude"}:
+        # Claude reads only the .claude/skills mirror — the canonical .agents/ copy would be
+        # a dead duplicate in a claude-only repo (issue #11). The tree is a function of --tools.
+        agents_dir = dst / ".agents"
+        if agents_dir.exists():
+            shutil.rmtree(agents_dir)
+            log("removed .agents/ (claude-only install; .claude/skills is the live copy)")
     resolve_agents_md(dst, tools)
     if args.install_user_skills:
         install_user_skills(dst, tools)

@@ -77,11 +77,34 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # ---------------------------------------------------------------------------
 # Config — OpenAI-compatible chat-completions endpoint, env-driven.
+# All three judge settings (KEY, BASE_URL, MODEL) fall back to the repo .env,
+# so the recommended put-everything-in-.env path actually works (issue #5:
+# env-only BASE_URL/MODEL made an NVIDIA judge silently soft-pass against the
+# DeepSeek default URL).
 # ---------------------------------------------------------------------------
 
-BASE_URL = os.environ.get("LLM_JUDGE_BASE_URL", "https://api.deepseek.com").rstrip("/")
+
+def _dotenv_get(name: str) -> str | None:
+    env = REPO_ROOT / ".env"
+    if not env.exists():
+        return None
+    for line in env.read_text(encoding="utf-8").splitlines():
+        if line.startswith(name + "="):
+            v = line.split("=", 1)[1].strip()
+            if v.startswith(("'", '"')) and v.endswith(("'", '"')):
+                v = v[1:-1]
+            return v or None
+    return None
+
+
+def _cfg(name: str, default: str | None = None) -> str | None:
+    v = os.environ.get(name, "").strip()
+    return v or _dotenv_get(name) or default
+
+
+BASE_URL = _cfg("LLM_JUDGE_BASE_URL", "https://api.deepseek.com").rstrip("/")
 API_URL = f"{BASE_URL}/v1/chat/completions"
-MODEL = os.environ.get("LLM_JUDGE_MODEL", "deepseek-chat")
+MODEL = _cfg("LLM_JUDGE_MODEL", "deepseek-chat")
 
 # Files we review. Generic source/text set — edit to fit your project.
 SUPPORTED_EXTS = {
@@ -330,19 +353,7 @@ def remove_review_block(path: Path) -> None:
 
 def get_api_key() -> str | None:
     """Read LLM_JUDGE_API_KEY from env or .env (in that order). None if missing."""
-    k = os.environ.get("LLM_JUDGE_API_KEY", "").strip()
-    if k:
-        return k
-    env = REPO_ROOT / ".env"
-    if not env.exists():
-        return None
-    for line in env.read_text(encoding="utf-8").splitlines():
-        if line.startswith("LLM_JUDGE_API_KEY="):
-            v = line.split("=", 1)[1].strip()
-            if v.startswith(("'", '"')) and v.endswith(("'", '"')):
-                v = v[1:-1]
-            return v or None
-    return None
+    return _cfg("LLM_JUDGE_API_KEY")
 
 
 def judge_health_check() -> bool:
