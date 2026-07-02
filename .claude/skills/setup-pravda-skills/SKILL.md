@@ -23,6 +23,13 @@ MCP, worktrees, or "session continuity." Every proposed item is described by its
 words ("the AI writes a test before code, so bugs are caught immediately"), never by insider
 shorthand. A technical term may appear only WITH its plain-words gloss in the same line.
 
+**STEP ZERO — READ BEFORE ANYTHING (your training data is stale):** the moment this skill
+triggers, READ `.claude/dprvda-kit/frameworks/INDEX.md` and the framework files matching any
+stack under discussion, plus `skills-catalog.md` and the relevant `stack-guides/*.md`. These
+carry the verified 2026-07 state of every tool (breaking changes, official AI connections, real
+incidents) from a 971-source study — the tools shipped breaking changes AFTER your training.
+You advise the user FROM these files, never from memory.
+
 **THE COMPONENT WALK (the interview's shape):** for EVERY component the kit touches, do all
 four, in order: EXPLAIN it in cold-user words (what it is, why it exists) → PROPOSE the concrete
 setup derived from their answers → SET IT UP → SHOW HOW TO USE IT (one worked example, which also
@@ -57,7 +64,12 @@ Batch A (the project):
    tools by agent legibility — full API + key auth + official MCP + machine docs — e.g. a data
    pipeline gets typed Python + a container host + Neon; a SaaS app gets TypeScript/Next + Vercel
    + Neon + Stripe), one-sentence why per pick, then exactly three options: take it / name your
-   own / decide later. Offer the deep-dive link for the curious: the full reasoning and
+   own / decide later. WHEN THE STACK IS CONFIRMED: copy each chosen framework's doc from
+   `frameworks/` into the target as `docs/framework-<name>.md` (keep the frozen_at stamp). Tell
+   the user why in plain words: "I'm also copying short, current fact-sheets about each tool you
+   picked into your project — AIs are trained on older versions, and these files auto-load into
+   every session, so your AI always knows the CURRENT way to use your tools." List them in the
+   Stage-2 manifest. Offer the deep-dive link for the curious: the full reasoning and
    per-archetype tables live at pravda.systems/blog/agent-native-stack-what-to-standardize-on.
    THE GUIDE IS OPTIONAL: if the stack is known/proposed, inject `docs/STACK.md` (stack + how an
    AI agent must behave on it); if the user wants to decide later, skip it and note in

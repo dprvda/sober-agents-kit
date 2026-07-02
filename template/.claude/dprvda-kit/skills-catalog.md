@@ -20,6 +20,7 @@ jargon. Grades: ★ = installed + tested by us hands-on · ✓ = read file-by-fi
 | audit-structure | reviews whether folders/names still make sense |
 | caveman | ultra-short answers mode (saves money on long sessions) |
 | write-a-skill | teach the AI a new repeatable procedure of your own |
+| graphify ★ | builds a map of your whole codebase the AI can query — one question replaces reading ten files; big time and cost saver on any codebase over ~30 files |
 
 ## Third-party — vetted (license-checked; install commands in the interview)
 | Pack | What it gives you | Grade / license |
