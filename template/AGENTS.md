@@ -1,104 +1,68 @@
-# Project: __PROJECT_NAME__ — RULES ONLY (canonical for ALL agents)
+# __PROJECT_NAME__ — agent rules
 
-This file is **rules-only** — the ONE canonical instruction file, read natively by Codex / Cursor /
-OpenClaw / Hermes / Continue / Aider / any AGENTS.md-aware tool, and imported by Claude Code via the
-one-line CLAUDE.md. State / architecture / reference docs live under `docs/`. The kit's
-machinery lives under [`.agent-kit/`](.agent-kit/). Keep this file short
-(`check_md_size` enforces a budget); link, don't duplicate.
-<!-- claude-adapter-start -->
-The Claude-Code-specific wiring (live hooks, settings) is specced in
-[the Claude adapter README](.agent-kit/adapters/claude/README.md).
-<!-- claude-adapter-end -->
+The ONE instruction file, read natively by Codex / Cursor / OpenClaw / Hermes and imported by
+Claude Code via the one-line CLAUDE.md. Rules only. Machinery lives in [`.agent-kit/`](.agent-kit/),
+its mechanics in [`.agent-kit/gates/README.md`](.agent-kit/gates/README.md). Keep this file short:
+past ~150 lines, agents start ignoring lines.
 
 <!-- FILL IN: one or two sentences on what this project IS, so a fresh session is oriented. -->
 
-## FIRST ACTION of every session (all tools)
+## 0. First action, every session
 
-Run `python .agent-kit/session/inject_context_docs.py --all` and read its output BEFORE doing
-anything else: it prints the project spine (key docs, the live progress ledger, recent state) so
-you never start blind. Claude Code runs this automatically at session start; every other agent
-runs it as this file's first instruction.
+Run `python .agent-kit/session/inject_context_docs.py --all` and read it before anything else:
+the project spine (key docs, live progress, recent state). Claude Code does this automatically;
+every other agent does it as this file's first instruction.
 
-## Pre-commit gates (enforced on `git commit` — NEVER `--no-verify`)
+## 1. Think before coding
 
-Dispatcher: `.agent-kit/gates/run_gates_parallel.py` (phase 1 serial → phase 2 parallel).
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
 
-- `critic_llm` — AI judge over each staged source file. Soft-passes when `LLM_JUDGE_API_KEY` is
-  unset. On a real issue it prepends `=== LLM_REVIEW_BLOCK ===` to the file (see protocol below).
-- `check_file_reason` — every `.py`/`.sh`/`.rs`/… declares a `# REASON:` header (≥30 chars).
-- `check_links` — every `.md` cross-reference resolves.
-- `check_doc_freshness` — folder READMEs + `tracks_dir:` cascade + orphan-md contract.
-- `check_md_size` — per-doc character budget.
-- `check_secrets` — staged text scanned for secret-shaped strings (keys, tokens, private keys).
-- `check_force_push` (pre-push stage) — blocks force-pushes and remote branch deletions for
-  EVERY tool and every human clone (escape: `AGENT_KIT_ALLOW_FORCE_PUSH=1`, deliberate only).
+- State assumptions. Multiple interpretations? Present them, don't pick silently.
+- A simpler approach exists? Say so. Push back when warranted.
+- Unclear? Stop. Name what's confusing. Ask.
 
-A hook failure blocks the commit. **Fix the cause — never bypass.**
+## 2. Simplicity first
 
-## `=== LLM_REVIEW_BLOCK ===` protocol (read first when you see one)
+**Minimum code that solves the problem. Nothing speculative.**
 
-The AI judge prepends a comment block to a source file: top marker → `Summary:` → numbered
-`L<line> (severity, category): issue -> fix` → end marker. When you see one: (1) read every item,
-(2) **fix the code** (deleting the block alone re-triggers it next commit), (3) remove the whole
-block (top marker through end), (4) re-stage + re-commit.
+- No features beyond the ask. No abstractions for single-use code. No unrequested configurability.
+- 200 lines that could be 50? Rewrite.
 
-## Commit messages — Conventional Commits 1.0 (`commit-msg` gate)
+## 3. Surgical changes
 
-`<type>(<scope>)?!?: <subject ≤99>` → blank → body (WHY; required if >50 LOC).
+**Touch only what you must. Clean up only your own mess.**
 
-- **types**: `feat | fix | refactor | perf | docs | test | build | ci | chore | revert` (must match the diff).
-- **scopes** (EDIT for your project): `core | cli | api | ui | docs | build | ci | deps | meta`.
+- Don't "improve" adjacent code or refactor what isn't broken. Match existing style.
+- Remove what YOUR change orphaned. Leave pre-existing dead code (mention it).
 
-## NO bypasses — fix the root cause
+## 4. Goal-driven execution
 
-- NO `--no-verify` / `--skip-hooks`. Fix what the hook caught.
-- NO disabling tests / `assert True` / commented-out assertions.
-- NO catching-and-ignoring exceptions (`except: pass`, error-hiding `unwrap_or_default()`).
-- NO `TODO` comments deferring required work — do it now or open a tracked issue.
-- Visible bug/anomaly → fix it in the CURRENT turn.
+**Define success criteria, then loop until verified.**
 
-## `archive/` — out of context
+- "Add validation" → "write tests for invalid inputs, make them pass."
+- After a fix: confirm with a real run, never "this should work."
 
-Files under `archive/` (any depth) are out-of-context. Don't read unless the user references one by
-path. Gates skip them. Revive with `git mv archive/<path> <path>`.
+## 5. The gates are law
 
-## Tempo — deadlines fit dozens of tasks, not one
+**Every commit passes the gates. A gate failure means fix the cause.**
 
-Time horizons ("by morning", "while I'm away") are DEADLINES, not scopes. Don't pad, don't idle,
-quality bar stays full per item. Backlog empty → write a short autopilot-proposal doc and continue
-on docs/cleanup. Never auto-pause.
+- NEVER `--no-verify`, never disable a test, never `assert True`, never swallow an exception.
+- The AI judge may prepend `=== LLM_REVIEW_BLOCK ===` to a file: fix the listed lines, then
+  remove the block ([protocol](.agent-kit/gates/README.md)).
+- Force-push and remote branch deletion are blocked at the push stage, for everyone.
 
+## 6. Never-violate project rules
+
+<!-- FILL IN: the 2-4 domain rules a session must not break, e.g. "never touch prod data",
+     "X is the only source of truth for Y". Delete this comment once filled. -->
+
+## Pointers, not prose
+
+- Skills (saved procedures, cross-tool SKILL.md): [`.agents/skills/`](.agents/skills/) — invoke by name.
+- Commit style: `.gitmessage` (Conventional Commits; the commit-msg gate enforces it).
+- `archive/` is out of context: don't read it unless named. Deadlines are deadlines, not scopes;
+  never auto-pause a long run.
 <!-- claude-adapter-start -->
-## Live hooks — Claude Code only (`.claude/settings.json` → `.agent-kit/adapters/claude/hooks/`)
-
-When the session runs in Claude Code, these fire in-session (other tools rely on the git-level
-gates above, which protect every tool):
-
-- `block-dangerous-git.py` — blocks history-rewrite git ops (force-push, `reset --hard`,
-  `clean -f`, `checkout/restore .`, `branch -D`, `filter-branch`). Normal `push` to any branch is fine.
-- `check-script-launch.py` — runs the AI judge on a script before Bash launches it; blocks only on
-  `severity=block`; fail-open.
-- `nudge-to-*` — soft PostToolUse suggestions to use MCP tools (never block).
+- Claude Code live hooks (dangerous-git blocker, judge-on-launch, soft nudges):
+  [`.agent-kit/adapters/claude/README.md`](.agent-kit/adapters/claude/README.md).
 <!-- claude-adapter-end -->
-
-## Skills (saved procedures — invoke by name in any tool that reads them)
-
-Cross-tool SKILL.md format (agentskills.io). The canonical home is `.agents/skills/` (Codex and
-OpenClaw read it natively; Hermes copies from it); Claude Code reads the `.claude/skills/` mirror
-made at install.
-
-- `sober-setup` — audit/update this project's kit setup (playbook lives in the kit repo)
-- `handoff` — save verified progress notes so the next session continues without re-explaining
-- `graphify` — standalone code-graph tool (bundled); one graph query replaces reading ten files
-- `tdd` — test before code · `grill-me` — interrogate a plan before building
-- `to-issues` — split a plan into grabbable tickets · `compact-docs` — trim over-budget docs
-- `audit-structure` — folder/naming review · `zoom-out` — re-orient after a deep dive
-- `caveman` — ultra-short answers mode · `write-a-skill` — teach the AI a new procedure
-
-See each `SKILL.md` for the full procedure.
-
-## Critical project rules
-
-<!-- FILL IN: the handful of domain rules a fresh session MUST know and must not re-litigate.
-     e.g. "X is the only valid source for Y", "never do Z in production". Keep to the essentials —
-     everything else lives in docs/. Delete this comment once filled. -->
