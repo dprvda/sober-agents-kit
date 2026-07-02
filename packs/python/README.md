@@ -1,7 +1,7 @@
 # Python pack
 
-Optional Python lint gate for the dprvda-kit. Enable with `install.ps1 --python`
-(or `install.sh --python`), which copies it into `.claude/dprvda-kit/gates/` and registers it.
+Optional Python lint gate for the agent-kit. Enable with `install.ps1 --python`
+(or `install.sh --python`), which copies it into `.agent-kit/gates/` and registers it.
 
 | File | What it checks | Blocks on | Needs |
 |---|---|---|---|
@@ -17,9 +17,9 @@ Follows the kit's **unavailable_pass** policy: if `ruff` isn't installed, it exi
 
 1. Copy the gate:
    ```sh
-   cp packs/python/gates/check_python_lint.py <target>/.claude/dprvda-kit/gates/
+   cp packs/python/gates/check_python_lint.py <target>/.agent-kit/gates/
    ```
-2. Register it in `.claude/dprvda-kit/gates/run_gates_parallel.py` — append to `PHASE2_GATES`:
+2. Register it in `.agent-kit/gates/run_gates_parallel.py` — append to `PHASE2_GATES`:
    ```python
    ("check_python_lint", "check_python_lint.py", True),
    ```

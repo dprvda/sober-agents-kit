@@ -213,7 +213,7 @@ Before dispatching N agents:
 ## See also
 
 - `CLAUDE.md` — project rules · "Per item: highest-priority not-blocked → implement → hooks → commit → push → next."
-- `.claude/dprvda-kit/docs/context-framework.md` — doc-authoring framework and freshness gates
+- `.agent-kit/docs/context-framework.md` — doc-authoring framework and freshness gates
 
 ## 2026-07 addendum — native worktrees supersede the manual loop
 

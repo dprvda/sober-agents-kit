@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # REASON: PostToolUse Grep hook -- emits a short JSON additionalContext nudge to the model after a Grep whose pattern looks like a code identifier in a code dir, because the model should re-route the NEXT lookup to mcp__serena__find_symbol (which returns body + location in one call). PostToolUse + additionalContext is the only non-blocking shape the harness surfaces to the model -- plain PreToolUse stderr is silently dropped. The nudge is one line + one MCP call hint -- short on purpose so the per-call context cost stays under ~120 chars. No existing hook covers this PostToolUse channel -- the prior PreToolUse stderr emission was invisible to the model and only documented the routing rule.
 """
-.claude/dprvda-kit/hooks/nudge-to-serena.py
+.agent-kit/adapters/claude/hooks/nudge-to-serena.py
 
 PostToolUse hook for Claude Code Grep tool. Reads tool input JSON on
 stdin, inspects the `pattern` (and `path`) field, and emits a JSON

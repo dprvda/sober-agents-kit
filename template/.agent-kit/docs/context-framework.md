@@ -3,9 +3,9 @@ title: Context framework — the lean-WHY style guide for AI-authored docs
 description: The pattern AI sessions follow when authoring or updating docs in this repo. Code is source of truth for HOW; docs are source of truth for WHY / CURRENT-STATE / DECISIONS. Four tiers (T1 REASON header, T2 per-module README, T3 topic doc, T4 ADR), cascade-triggered body edits enforced by check_doc_freshness.py, citation-required claims, honest-output principle. Read once on first session; reference thereafter when authoring or updating a tracked doc.
 tracks_dir:
 - docs/decisions/_TEMPLATE.md
-- .claude/dprvda-kit/gates/check_doc_freshness.py
-- .claude/dprvda-kit/gates/check_file_reason.py
-- .claude/dprvda-kit/gates/check_md_size.py
+- .agent-kit/gates/check_doc_freshness.py
+- .agent-kit/gates/check_file_reason.py
+- .agent-kit/gates/check_md_size.py
 ---
 
 # Context framework
@@ -142,4 +142,4 @@ Quality > coverage. A 12-ADR set with real evidence beats a 15-ADR set with 3 vi
 - `docs/decisions/README.md` — discovery recipes for ADRs (no hand-maintained INDEX; status + topic filters via `grep` on frontmatter)
 - `docs/README.md` — AI entry point ("which doc for what task")
 - `CLAUDE.md` — project rules (loaded every session)
-- `.claude/dprvda-kit/gates/check_doc_freshness.py` — the gate this framework feeds (unchanged)
+- `.agent-kit/gates/check_doc_freshness.py` — the gate this framework feeds (unchanged)

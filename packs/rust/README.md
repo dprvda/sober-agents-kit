@@ -1,8 +1,8 @@
 # Rust pack
 
-Optional Rust supply-chain + binary-hardening gates for the dprvda-kit. The fastest way to enable
+Optional Rust supply-chain + binary-hardening gates for the agent-kit. The fastest way to enable
 them is `install.ps1 --rust` (or `install.sh --rust`), which copies these into
-`.claude/dprvda-kit/gates/` and registers them. Manual steps are below.
+`.agent-kit/gates/` and registers them. Manual steps are below.
 
 | File | What it checks | Blocks on | Needs |
 |---|---|---|---|
@@ -17,9 +17,9 @@ exits 0 with a stderr warning instead of breaking a fresh checkout.
 
 1. Copy the gates into the kit's gates dir:
    ```sh
-   cp packs/rust/gates/*.py <target>/.claude/dprvda-kit/gates/
+   cp packs/rust/gates/*.py <target>/.agent-kit/gates/
    ```
-2. Register the two cargo gates in `.claude/dprvda-kit/gates/run_gates_parallel.py` — append to `PHASE2_GATES`:
+2. Register the two cargo gates in `.agent-kit/gates/run_gates_parallel.py` — append to `PHASE2_GATES`:
    ```python
    ("check_cargo_audit", "check_cargo_audit.py", True),
    ("check_cargo_vet",   "check_cargo_vet.py",   True),
@@ -28,9 +28,9 @@ exits 0 with a stderr warning instead of breaking a fresh checkout.
 3. `check_binary_secrets.py` is best wired as a standalone `.pre-commit-config.yaml` hook so it scans
    built artifacts rather than running on every doc commit:
    ```yaml
-   - id: dprvda-kit-binary-secrets
+   - id: agent-kit-binary-secrets
      name: scan compiled binaries for secret-shaped strings
-     entry: python .claude/dprvda-kit/gates/check_binary_secrets.py
+     entry: python .agent-kit/gates/check_binary_secrets.py
      language: system
      always_run: true
      pass_filenames: false

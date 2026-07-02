@@ -1,4 +1,4 @@
-# REASON: SessionStart hook that force-injects the full project-knowledge corpus (latest handoff + continue-directive, CLAUDE.md, README-CLAUDE.md, every docs/*.md, recent git log, open-issue titles) into a fresh session after /clear or /compact, because the SessionStart additionalContext field is hard-capped at 10000 chars per hook invocation so a single hook cannot deliver large corpora — this script is invoked once per chunk (--chunk N) across many registered hook entries, each emitting one <=9800-char slice instead of silently dropping content.
+# REASON: SessionStart hook that force-injects the full project-knowledge corpus (latest handoff + continue-directive, CLAUDE.md, .agent-kit/adapters/claude/README.md, every docs/*.md, recent git log, open-issue titles) into a fresh session after /clear or /compact, because the SessionStart additionalContext field is hard-capped at 10000 chars per hook invocation so a single hook cannot deliver large corpora — this script is invoked once per chunk (--chunk N) across many registered hook entries, each emitting one <=9800-char slice instead of silently dropping content.
 """SessionStart context-injection hook (per-chunk).
 
 The SessionStart ``additionalContext`` field is capped at 10000 chars
@@ -8,7 +8,7 @@ distinct ``--chunk`` index; the script slices the corpus into
 <=9800-char, doc-boundary-aligned chunks and emits the requested one.
 
 Corpus order: latest handoff (+ a continue-the-handoff directive),
-CLAUDE.md, README-CLAUDE.md, docs/*.md, an auto-generated ADR index,
+CLAUDE.md, .agent-kit/adapters/claude/README.md, docs/*.md, an auto-generated ADR index,
 the recent ~50 commit subjects, open-issue titles.
 
 Output: one JSON object
@@ -107,8 +107,8 @@ def _build_corpus() -> list[tuple[str, str]]:
 
     Generic order:
       1. Latest .claude/handoffs/handoff_*.md (newest) + continue-directive
-      2. CLAUDE.md
-      3. README-CLAUDE.md
+      2. AGENTS.md (the canonical rules, every tool)
+      3. .agent-kit/adapters/claude/README.md (if present)
       4. docs/*.md  (sorted alphabetically)
       5. ADR index  (auto-generated from docs/decisions/ADR-*.md)
       6. Recent git log (~50 commits)
@@ -127,7 +127,7 @@ def _build_corpus() -> list[tuple[str, str]]:
         items.append(("latest handoff + continue-directive", handoff))
 
     # 2-3. Primary orientation docs
-    for rel in ("CLAUDE.md", "README-CLAUDE.md"):
+    for rel in ("AGENTS.md", ".agent-kit/adapters/claude/README.md"):
         text = _read(rel)
         if text:
             items.append((rel, text))
@@ -175,14 +175,27 @@ def main() -> int:
     ap.add_argument("--chunk", type=int, help="1-based chunk index to emit")
     ap.add_argument("--count", action="store_true",
                     help="print the current chunk count and exit")
+    ap.add_argument("--all", action="store_true",
+                    help="print the whole corpus as plain text (no hook JSON) — the "
+                         "tool-neutral path: any agent runs this once at session start "
+                         "per the AGENTS.md first-action instruction")
     args = ap.parse_args()
 
     chunks = _chunks()
     if args.count:
         print(len(chunks))
         return 0
+    if args.all:
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except AttributeError:
+            pass
+        for label, text in chunks:
+            print(f"\n===== [{label}] =====\n")
+            print(text)
+        return 0
     if args.chunk is None:
-        print("error: --chunk or --count required", file=sys.stderr)
+        print("error: --chunk, --count or --all required", file=sys.stderr)
         return 2
     if args.chunk < 1 or args.chunk > len(chunks):
         # Beyond the corpus — spare hook slot, inject nothing.

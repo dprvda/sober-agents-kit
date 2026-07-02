@@ -39,7 +39,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Secret-shaped patterns. Modelled on the binary-secrets token list, plus
 # PEM private-key headers and generic assignment shapes for staged text.
@@ -87,10 +87,14 @@ def staged_diff() -> str:
         ["git", "diff", "--cached", "--no-color", "--unified=0"],
         cwd=REPO_ROOT,
         capture_output=True,
-        text=True,
+        # git emits UTF-8; without an explicit encoding Windows decodes with
+        # charmap and a large staged diff crashes the gate (fail-open would be
+        # worse: a crashed secrets gate must never wave a commit through).
+        encoding="utf-8",
+        errors="replace",
         check=False,
     )
-    return r.stdout if r.returncode == 0 else ""
+    return r.stdout if r.returncode == 0 and r.stdout is not None else ""
 
 
 def line_is_allowlisted(line: str) -> bool:

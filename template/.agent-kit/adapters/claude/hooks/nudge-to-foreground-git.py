@@ -5,7 +5,7 @@
 # typically complete in 15-30s and long single-poll timeouts make the conversation appear
 # hung for the full timeout window even after the commit lands.
 """
-.claude/dprvda-kit/hooks/nudge-to-foreground-git.py
+.agent-kit/adapters/claude/hooks/nudge-to-foreground-git.py
 
 PostToolUse hook for Claude Code Bash tool. Reads tool input JSON on
 stdin, inspects whether the command was a backgrounded git commit (or

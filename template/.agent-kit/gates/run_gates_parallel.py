@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-# REASON: two-phase pre-commit gate dispatcher for the dprvda-kit — runs phase 1 serially
+# REASON: two-phase pre-commit gate dispatcher for the agent-kit — runs phase 1 serially
 # (code-discipline gates that may mutate the working tree, e.g. the AI judge) then phase 2
 # in parallel (read-only doc gates), because phase-2 gates must read post-mutation file
 # content and fanning them out concurrently keeps the whole commit hook near ~phase1+slowest.
 # Gates whose script is absent are skipped (so optional modules / language packs need no edit
 # here) instead of crashing the commit.
-"""run_gates_parallel.py — dprvda-kit pre-commit gate dispatcher.
+"""run_gates_parallel.py — agent-kit pre-commit gate dispatcher.
 
 Default roster (all language-agnostic, all blocking):
 
@@ -38,7 +38,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 GATES_DIR = Path(__file__).resolve().parent
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # (gate_name, script_filename, blocking)
 PHASE1_GATES = [

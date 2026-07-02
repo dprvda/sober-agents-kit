@@ -12,4 +12,4 @@ interview playbook lives in the kit repo, not here, so updates never drift.
 1. Locate a clone of the kit repo; if none exists, `git clone
    https://github.com/dprvda/sober-agents-kit` into a sibling or temp directory.
 2. Read the kit's `setup/INTERVIEW.md` in full and follow its **"Auditing an existing install"**
-   section against this project (the install manifest is `.claude/dprvda-kit/kit.config.json`).
+   section against this project (the install manifest is `.agent-kit/kit.config.json`).

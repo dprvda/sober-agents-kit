@@ -14,9 +14,9 @@
 # Implements `unavailable_pass` (rc=0 + stderr warning) when LLM_JUDGE_API_KEY is
 # missing, the endpoint is unreachable, or a per-file call fails after one retry —
 # USER-AUTHORIZED 2026-04-29, see top-of-file authorization line. Also reused via
-# `--files <path> --no-mutate` by the .claude/dprvda-kit/hooks/check-script-launch.py
+# `--files <path> --no-mutate` by the .agent-kit/adapters/claude/hooks/check-script-launch.py
 # PreToolUse hook for ad-hoc launch-time review (working-tree, no block mutation).
-""".claude/dprvda-kit/gates/critic_llm.py — AI-judge pre-commit gate (any language).
+""".agent-kit/gates/critic_llm.py — AI-judge pre-commit gate (any language).
 
 Per-file flow:
   1. read staged content (`git show :path`) and staged diff (`git diff --cached`)
@@ -47,13 +47,13 @@ Exit codes:
   2 — internal error (sub-call setup failed)
 
 CLI:
-  python .claude/dprvda-kit/gates/critic_llm.py            # gate mode (review staged set)
-  python .claude/dprvda-kit/gates/critic_llm.py --files A B  # ad-hoc, review named files
-  python .claude/dprvda-kit/gates/critic_llm.py --dry-run   # show staged set, no API call
-  python .claude/dprvda-kit/gates/critic_llm.py --no-mutate  # don't write LLM_REVIEW_BLOCK
+  python .agent-kit/gates/critic_llm.py            # gate mode (review staged set)
+  python .agent-kit/gates/critic_llm.py --files A B  # ad-hoc, review named files
+  python .agent-kit/gates/critic_llm.py --dry-run   # show staged set, no API call
+  python .agent-kit/gates/critic_llm.py --no-mutate  # don't write LLM_REVIEW_BLOCK
                                                   # into files (used by the
                                                   # PreToolUse launch-time hook)
-  python .claude/dprvda-kit/gates/critic_llm.py --json      # machine-readable summary
+  python .agent-kit/gates/critic_llm.py --json      # machine-readable summary
 """
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # ---------------------------------------------------------------------------
 # Config — OpenAI-compatible chat-completions endpoint, env-driven.

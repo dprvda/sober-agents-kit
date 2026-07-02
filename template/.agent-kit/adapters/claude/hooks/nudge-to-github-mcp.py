@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # REASON: PostToolUse Bash hook -- emits a short JSON additionalContext nudge to the model after a `gh issue|pr|search|api|release|workflow|run` invocation, because the model should re-route the NEXT lookup to mcp__github__* (typed structured JSON, batches via HTTP/2 with PAT auth, one round-trip vs N gh subprocess spawns). PostToolUse + additionalContext is the only non-blocking shape the harness surfaces to the model -- plain PreToolUse stderr is silently dropped. The nudge is one line naming the exact MCP method-multiplexed tool so the model doesn't guess get_issue (which does NOT exist; it's issue_read with method='get').
 """
-.claude/dprvda-kit/hooks/nudge-to-github-mcp.py
+.agent-kit/adapters/claude/hooks/nudge-to-github-mcp.py
 
 PostToolUse hook for Claude Code Bash tool. Detects `gh` CLI usage that
 the GitHub MCP server (mcp__github__*) can handle more efficiently,

@@ -4,7 +4,7 @@
 # can't be executed even if AI judgment slips, because these operations rewrite or
 # destroy history that cannot be recovered without deliberate user action.
 """
-.claude/dprvda-kit/hooks/block-dangerous-git.py
+.agent-kit/adapters/claude/hooks/block-dangerous-git.py
 
 PreToolUse hook for Claude Code Bash tool. Reads the tool input as JSON
 on stdin, extracts the command, and exits with code 2 if it matches a

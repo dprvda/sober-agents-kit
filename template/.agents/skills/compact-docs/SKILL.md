@@ -16,7 +16,7 @@ Bring every over-budget Markdown doc down to its **WARN** threshold — not mere
 ## Quick start
 
 ```bash
-python .claude/dprvda-kit/gates/check_md_size.py     # every WARN + BLOCK row is a target
+python .agent-kit/gates/check_md_size.py     # every WARN + BLOCK row is a target
 ```
 
 Each flagged row prints `chars/BLOCK [tier]`. The goal is that tier's WARN number. Walk each flagged doc to ≤ WARN.
@@ -41,4 +41,4 @@ Each agent does, for its doc, in this order:
 
 ## Finish
 
-Re-run `python .claude/dprvda-kit/gates/check_md_size.py`. Confirm no WARN/BLOCK rows remain, or report exactly which docs stopped at a lossless floor above WARN and which facts blocked them.
+Re-run `python .agent-kit/gates/check_md_size.py`. Confirm no WARN/BLOCK rows remain, or report exactly which docs stopped at a lossless floor above WARN and which facts blocked them.

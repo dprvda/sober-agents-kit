@@ -3,7 +3,7 @@
 # silently let dangerous commands through and there is no other test infra covering Claude
 # Code hooks in this scaffold.
 """Smoke tests for block-dangerous-git.py. Run from repo root:
-    python .claude/dprvda-kit/hooks/test_block_dangerous_git.py
+    python .agent-kit/adapters/claude/hooks/test_block_dangerous_git.py
 """
 import json
 import subprocess

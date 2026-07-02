@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-# REASON: conservative uninstaller for the dprvda-kit — removes the namespaced machinery dir and
+# REASON: conservative uninstaller for the agent-kit — removes the namespaced machinery dir and
 # restores *.kit-bak backups, but LISTS shared root files for manual removal rather than deleting
 # user-editable files, because a blind delete could remove a CLAUDE.md / .gitignore the user has
 # since customized. Safety over completeness.
-"""Remove the dprvda-kit from a target repo (conservative).
+"""Remove the agent-kit from a target repo (conservative).
 
 Usage:
-  python uninstall.py --target /path/to/repo [--kit-name dprvda-kit]
+  python uninstall.py --target /path/to/repo [--kit-name agent-kit]
 """
 from __future__ import annotations
 
@@ -18,8 +18,7 @@ from pathlib import Path
 
 # Root files the installer may have written. Removed only if still byte-identical
 # to the template (i.e. the user has not customized them).
-ROOT_FILES = ["AGENTS.md", "README-CLAUDE.md", ".gitmessage", ".mcp.json",
-              ".env.example", ".op-claude.env.example"]
+ROOT_FILES = ["AGENTS.md", "CLAUDE.md", ".gitmessage", ".mcp.json", ".env.example"]
 KIT_ROOT = Path(__file__).resolve().parent
 TEMPLATE = KIT_ROOT / "template"
 
@@ -27,14 +26,25 @@ TEMPLATE = KIT_ROOT / "template"
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--target", required=True)
-    ap.add_argument("--kit-name", default="dprvda-kit")
+    ap.add_argument("--kit-name", default="agent-kit")
     args = ap.parse_args()
     dst = Path(args.target).resolve()
 
-    kit = dst / ".claude" / args.kit_name
+    kit = dst / f".{args.kit_name}"
     if kit.exists():
         shutil.rmtree(kit)
         print(f"[uninstall] removed {kit}")
+    for mirror in (dst / ".claude" / "skills", dst / ".agents" / "skills"):
+        # kit-installed skill mirrors; leave any non-kit skill a user added
+        for name in ("sober-setup", "handoff", "graphify", "systematic-debugging",
+                     "subagent-driven-development", "receiving-code-review", "tdd",
+                     "grill-me", "to-issues", "compact-docs", "audit-structure",
+                     "zoom-out", "caveman", "write-a-skill"):
+            d = mirror / name
+            if d.exists():
+                shutil.rmtree(d)
+        if mirror.exists() and not any(mirror.iterdir()):
+            mirror.rmdir()
 
     # restore backups
     for bak in dst.rglob("*.kit-bak"):

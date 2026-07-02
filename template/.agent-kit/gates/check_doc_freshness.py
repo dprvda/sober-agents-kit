@@ -48,7 +48,7 @@ Exit codes:
   1 -- drift detected (presence missing OR mtime stale)
   2 -- config malformed
 
-See README-CLAUDE.md "Doc-drift control framework" for the design.
+See .agent-kit/adapters/claude/README.md "Doc-drift control framework" for the design.
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ except ImportError:
     )
     sys.exit(2)
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # ----------------------------------------------------------------------
 # Config -- what counts as a script, which folders are exempt, etc.
@@ -98,6 +98,8 @@ TOP_LEVEL_EXEMPT_PREFIXES = (
     ".git",
     ".github",
     ".claude",
+    ".agent-kit",
+    ".agents",
     ".cache",
     ".pytest_cache",
     ".mypy_cache",
@@ -153,7 +155,7 @@ README_EXEMPT_DIRS = {
 # Path-pattern based exempts (NOT name-based). Edit these to match your
 # project's layout. Examples: crates/ sub-folders, tooling trees, etc.
 README_EXEMPT_PATH_PATTERNS: tuple[re.Pattern, ...] = (
-    # scripts/ subtree is tracked from README-CLAUDE.md via tracks_dir,
+    # scripts/ subtree is tracked from .agent-kit/adapters/claude/README.md via tracks_dir,
     # so folder-level README requirement is dropped. Per-script REASON
     # headers already document purpose.
     re.compile(r"^scripts(/.*)?$"),

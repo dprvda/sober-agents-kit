@@ -49,7 +49,7 @@ It wasn't guessed together. It's built on two published studies — one on how e
 actually run coding agents ([967 sources](https://pravda.systems/blog/run-parallel-ai-coding-agents-without-babysitting)),
 one on which platforms and tools agents can genuinely drive ([971 sources](https://pravda.systems/blog/agent-native-stack-what-to-standardize-on)) —
 plus hands-on installs of every major community pack (several of which turned out to have
-silently broken hooks; the survivors are in [the catalog](template/.claude/dprvda-kit/skills-catalog.md)).
+silently broken hooks; the survivors are in [the catalog](template/.agent-kit/skills-catalog.md)).
 Every gate maps to a real incident from that research. Every recommendation carries its receipt.
 
 ## The setup, step by step (what you'll actually see)
@@ -70,20 +70,26 @@ Interactive version: open [`docs/setup-flow-demo.html`](docs/setup-flow-demo.htm
 
 ## What works with which tool (the honest matrix)
 
+Almost everything is tool-neutral by construction. The one genuinely Claude-specific piece is the
+in-session hook API, and its most dangerous target (history rewrites) is covered for everyone by
+a git-level pre-push block.
+
 | Layer | Claude Code | Codex | OpenClaw | Hermes | no AI at all |
 |---|---|---|---|---|---|
 | Commit gates + AI judge (git-level) | ✔ | ✔ | ✔ | ✔ | ✔ |
+| Force-push / branch-delete block (git pre-push) | ✔ | ✔ | ✔ | ✔ | ✔ |
 | AGENTS.md canonical rules | ✔ (via CLAUDE.md import) | ✔ native | ✔ native | ✔ native | n/a |
-| Skills (agentskills.io SKILL.md) | ✔ `.claude/skills/` | ✔ `.agents/skills/` | ✔ `.agents/skills/` or `~/.openclaw/skills/` | ✔ `~/.hermes/skills/` | n/a |
-| Live in-session hooks (block BEFORE a command runs) | ✔ | — | possible via its TS plugin-hook API (port welcome) | — | n/a |
-| Session memory (docs auto-load + progress ledger) | ✔ | docs still help, read on demand | partial (own memory system) | partial (own memory system) | n/a |
+| Skills (agentskills.io SKILL.md) | ✔ `.claude/skills/` mirror | ✔ `.agents/skills/` native | ✔ `.agents/skills/` native (or `~/.openclaw/skills/`) | ✔ `~/.hermes/skills/` | n/a |
+| Session memory (`.agent-kit/session/`) | ✔ automatic (SessionStart) | ✔ via the AGENTS.md first-action instruction | ✔ same (plus its own memory) | ✔ same (plus its own memory) | n/a |
+| Live in-session hooks (block mid-session, BEFORE git even runs) | ✔ | — (the git-level layer covers it) | TS plugin-hook API exists — port welcome | — (the git-level layer covers it) | n/a |
 
 The installer takes `--tools claude,codex,openclaw,hermes` and places each layer only where it
-can actually run — and tells you exactly what was skipped and why.
+can actually run — and tells you exactly what was skipped and why. Add `--install-user-skills`
+to also copy the skills into OpenClaw's / Hermes' user-level skill dirs.
 
 ## What's inside
 
-Everything the kit installs lives under a single namespaced folder, **`.claude/dprvda-kit/`**, so it
+Everything the kit installs lives under a single namespaced folder, **`.agent-kit/`**, so it
 can't collide with another kit a collaborator might also use. Only files that external tools *require*
 at the repo root (`AGENTS.md`, `.pre-commit-config.yaml`, …) sit at the root.
 
@@ -94,18 +100,22 @@ your-repo/
 ├─ CLAUDE.md                 # one-line bridge importing AGENTS.md                 [Claude Code]
 ├─ .pre-commit-config.yaml   # the safety gates — run on `git commit`, so they
 │                            #   protect you with ANY tool, or no tool at all     [ALL TOOLS]
-├─ .gitmessage  .mcp.json  .env.example  README-CLAUDE.md (the Claude wiring manual)
-├─ .agents/skills/           # the same skills, where Codex + OpenClaw look        [--tools]
-└─ .claude/
-   ├─ settings.json          # wires the live hooks below                          [Claude Code]
-   ├─ skills/                # sober-setup /tdd /handoff /graphify …               [Claude Code]
-   └─ dprvda-kit/            # all kit machinery, namespaced (renamable at install)
-      ├─ gates/              # pre-commit gates + the AI judge + its prompts       [ALL TOOLS]
-      ├─ hooks/              # live in-session guards (git-safety, re-inject)      [Claude Code]
-      ├─ frameworks/         # verified 2026-07 fact-sheets about your tools       [ALL TOOLS]
-      ├─ stack-guides/  skills-catalog.md
-      ├─ inject_context_docs.py   # session memory: docs auto-load at start        [Claude Code]
-      └─ docs/               # context-framework.md, parallel-agents.md
+├─ .gitmessage  .env.example
+├─ .agent-kit/               # ALL kit machinery, tool-neutral home at the root
+│  │                         #   (renamable at install: --kit-name)
+│  ├─ gates/                 # pre-commit + pre-push gates, the AI judge + prompts [ALL TOOLS]
+│  ├─ session/               # session memory: the spine printer every agent runs
+│  │                         #   at session start                                  [ALL TOOLS]
+│  ├─ frameworks/            # verified 2026-07 fact-sheets about your tools       [ALL TOOLS]
+│  ├─ stack-guides/  skills-catalog.md  docs/                                      [ALL TOOLS]
+│  └─ adapters/              # per-tool wiring, each fenced in its own folder
+│     └─ claude/             #   the one adapter that exists today: live hooks +
+│                            #   the wiring manual (ports for other tools welcome)
+├─ .agents/skills/           # skills, canonical home (agentskills.io — Codex,
+│                            #   OpenClaw read it natively; Hermes copies from it) [ALL TOOLS]
+└─ .claude/  .mcp.json       # only if you chose claude in --tools: the two files
+                             #   Claude Code requires at these exact paths
+                             #   (settings wiring + a skills mirror)
 ```
 
 ### The gates (git-level — they protect every tool)
@@ -121,15 +131,26 @@ Run on every `git commit` by a two-phase dispatcher (`run_gates_parallel.py`), n
 | `check_doc_freshness` | docs drifting from the code they describe (`tracks_dir`/`frozen_at` contracts) |
 | `check_links` | broken `.md` cross-references |
 | `check_md_size` | docs growing past what an AI actually reads |
+| `check_force_push` | (pre-push stage) force-pushes + remote branch deletions, for EVERY tool and every clone |
 
 A self-defending canary re-tests the doc-freshness gate whenever its own script is edited.
 
-### The live hooks (Claude Code today)
+### Session memory (`.agent-kit/session/` — all tools)
 
-`block-dangerous-git` (force-push, `reset --hard`, `branch -D` … physically blocked mid-session) ·
-`check-script-launch` (the judge reviews a script before it runs) · `remind-claude-md` (rules
-re-injected on every commit) · `session-progress` (state flushed to disk before compaction) ·
-soft `nudge-to-*` suggestions. Spec: [`template/README-CLAUDE.md`](template/README-CLAUDE.md).
+The AI's memory is wiped between sessions; people lose the first 10-15 minutes of every session
+re-explaining their own project. The session module fixes it tool-neutrally:
+`inject_context_docs.py --all` prints the project spine (key docs, the live progress ledger,
+recent state), and AGENTS.md's first instruction tells every agent to run it before anything
+else. On Claude Code it's wired to run automatically at session start (sized to your docs at
+install). Pair with the `handoff` skill: verified progress notes out, a briefed session in.
+
+### The live hooks (the Claude Code adapter, `.agent-kit/adapters/claude/`)
+
+`block-dangerous-git` (force-push, `reset --hard`, `branch -D` … physically blocked mid-session,
+before git even runs) · `check-script-launch` (the judge reviews a script before it runs) · `session-progress` (state flushed to
+disk before compaction) · soft `nudge-to-*` suggestions. Other tools don't expose a hook API, so
+their protection is the git-level layer above — same rules, one stage later. Spec:
+[`template/.agent-kit/adapters/claude/README.md`](template/.agent-kit/adapters/claude/README.md).
 
 ### The skills (cross-tool SKILL.md format)
 
@@ -146,15 +167,15 @@ soft `nudge-to-*` suggestions. Spec: [`template/README-CLAUDE.md`](template/READ
 | `to-issues` / `compact-docs` / `audit-structure` / `zoom-out` / `caveman` / `write-a-skill` | tickets from a plan · doc trimming · structure review · big-picture re-orient · terse mode · teach a new procedure |
 
 The interview proposes ≤12 per project (past ~12 similar skills, agents pick the wrong one) from
-[the 33-entry researched catalog](template/.claude/dprvda-kit/skills-catalog.md), which also
+[the 33-entry researched catalog](template/.agent-kit/skills-catalog.md), which also
 grades the vetted third-party packs (Superpowers, Planning with Files, visual-eyes, ccusage, …).
 
 ### The framework fact-sheets
 
-13 dated one-pagers (`template/.claude/dprvda-kit/frameworks/`) on Next.js, Vercel, Neon, Stripe,
+13 dated one-pagers (`template/.agent-kit/frameworks/`) on Next.js, Vercel, Neon, Stripe,
 auth, email, scraping, containers, Playwright, typed Python, observability, Remotion, graphify —
 the verified 2026-07 state of each tool, copied into your project so the agent stops building
-from stale training data. Index with one-liners: [`INDEX.md`](template/.claude/dprvda-kit/frameworks/INDEX.md).
+from stale training data. Index with one-liners: [`INDEX.md`](template/.agent-kit/frameworks/INDEX.md).
 
 ### Optional modules
 
@@ -179,7 +200,7 @@ troubleshooting: [`INSTALL.md`](INSTALL.md). Uninstall: `python uninstall.py --t
 
 ## Customizing
 
-- **Judge prompts** are plain markdown in `.claude/dprvda-kit/gates/prompts/` — edit freely.
+- **Judge prompts** are plain markdown in `.agent-kit/gates/prompts/` — edit freely.
 - **Gate tiers / exempt dirs / commit scopes** are constants at the top of each gate — edit to taste.
 - **Rename the kit** (`--kit-name`) if you want a different namespace; the installer rewrites refs.
 

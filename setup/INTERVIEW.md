@@ -25,9 +25,9 @@ how you ask questions: use your structured multiple-choice question tool if you 
 one batch at a time.
 
 **STEP ZERO B — READ BEFORE ANYTHING (your training data is stale):** read
-`template/.claude/dprvda-kit/frameworks/INDEX.md` and the framework files matching any stack
-under discussion, plus `template/.claude/dprvda-kit/skills-catalog.md` and the relevant
-`template/.claude/dprvda-kit/stack-guides/*.md`. These carry the verified 2026-07 state of every
+`template/.agent-kit/frameworks/INDEX.md` and the framework files matching any stack
+under discussion, plus `template/.agent-kit/skills-catalog.md` and the relevant
+`template/.agent-kit/stack-guides/*.md`. These carry the verified 2026-07 state of every
 tool (breaking changes, official AI connections, real incidents) from a 971-source study — the
 tools shipped breaking changes AFTER your training. You advise the user FROM these files, never
 from memory.
@@ -37,13 +37,16 @@ from memory.
 | Layer | Claude Code | Codex | OpenClaw | Hermes | any other |
 |---|---|---|---|---|---|
 | Commit gates (pre-commit, git-level) | yes | yes | yes | yes | yes — they run on `git commit`, no AI tool involved |
+| Force-push / branch-delete block (git pre-push) | yes | yes | yes | yes | yes — fires on `git push` from any clone |
 | AGENTS.md canonical rules | yes (via the one-line CLAUDE.md import) | yes (native) | yes (native, workspace) | yes (native, also reads CLAUDE.md) | if it reads AGENTS.md |
-| Skills (SKILL.md folders) | yes — `.claude/skills/` | yes — `<repo>/.agents/skills/` or `~/.agents/skills/` (agentskills.io format) | yes — `<workspace>/skills/` or `~/.openclaw/skills/` (agentskills.io format) | yes — `~/.hermes/skills/` (agentskills.io format) | if it supports agentskills.io |
-| Live in-session hooks (block a dangerous command BEFORE it runs) | yes — shell hooks in `.claude/settings.json` | no | possible via its TypeScript plugin-hook API — the kit does not ship one yet (port welcome) | no documented hook API | no |
-| Session memory (docs auto-load each session + progress ledger) | yes — SessionStart/PreCompact hooks | no (docs still help: point AGENTS.md at them) | partial — OpenClaw has its own MEMORY.md system; the kit's docs convention still works as readable files | partial — same, Hermes has its own memory | no |
+| Skills (SKILL.md folders) | yes — the `.claude/skills/` mirror | yes — `<repo>/.agents/skills/` native (agentskills.io) | yes — `.agents/skills/` native, or `~/.openclaw/skills/` | yes — `~/.hermes/skills/` | if it supports agentskills.io |
+| Session memory (`.agent-kit/session/` spine printer + progress ledger) | yes — automatic (SessionStart/PreCompact wiring) | yes — via the AGENTS.md first-action instruction (`--all`) | yes — same (it also has its own MEMORY.md system) | yes — same (own memory too) | via the AGENTS.md instruction |
+| Live in-session hooks (block a dangerous command BEFORE the tool runs it) | yes — shell hooks in `.claude/settings.json` | no (the git-level layers above cover the same rules one stage later) | its TypeScript plugin-hook API could carry a port — the kit does not ship one yet | no documented hook API (git-level layers cover it) | no |
 
-Be honest about this split at every step: the git-level gates protect the user with ANY tool or
-no tool; the live layer is Claude Code today. Never imply a layer works where it does not.
+Be honest about this split at every step: everything except the live in-session hooks is
+tool-neutral by construction; the hook layer is Claude Code today, and its most dangerous target
+(history rewrites) is already covered for everyone by the pre-push gate. Never imply a layer
+works where it does not.
 
 ## Stage 1 — the interview (two batches)
 
@@ -68,6 +71,15 @@ confirmation. Nothing is final until the pre-install SUMMARY, where every derive
 shown once and the user can amend any line before anything is written.
 
 Batch A (the project):
+0. **FIRST QUESTION, always: which AI coding tool(s) do you use?** Claude Code / Codex /
+   OpenClaw / Hermes / Cursor / several / none-yet. This answer shapes every later step (which
+   layers get wired, where skills land, what the cheatsheet teaches), so it comes before
+   anything else — and say the reassuring part out loud: "the repo I set up is shared and ready
+   for ALL of these; this answer only decides which adapters I switch on for YOU." Explain the
+   split honestly per the Stage-0 matrix in one breath: the commit + push gates and session
+   memory work with every tool (they run on git and plain files, not inside the AI); the live
+   in-session hooks are Claude Code's today. The answer becomes the installer's `--tools` list;
+   offer `--install-user-skills` when OpenClaw/Hermes is in the mix.
 1. **What are you building? A few plain sentences: what it does and the goal.** ONE question,
    two jobs: (a) DERIVE the archetype yourself (SaaS web app / data pipeline / content-video
    pipeline / API service / other) and confirm it in one line ("sounds like a data pipeline —
@@ -196,7 +208,7 @@ future install command.
    filled for the chosen provider, `LLM_JUDGE_API_KEY=` left blank. NEVER ask the user to paste a
    secret into the chat. Tell them exactly where to get the key, which file to open, and that
    everything soft-passes until it's filled; give the self-test command to verify afterwards.
-6. Write `.claude/dprvda-kit/kit.config.json`: every interview answer (including the tool list) +
+6. Write `.agent-kit/kit.config.json`: every interview answer (including the tool list) +
    the kit commit SHA + timestamp. This is the update manifest — a future re-run reads it,
    re-asks only what changed, and can re-derive every generated file without clobbering hand
    edits.
@@ -248,7 +260,7 @@ its key.
 
 ## Auditing an existing install (the update path)
 
-If `.claude/dprvda-kit/kit.config.json` exists: diff the installed kit files against this repo's
+If `.agent-kit/kit.config.json` exists: diff the installed kit files against this repo's
 `template/`, list what changed upstream vs what the user hand-edited (never overwrite hand
 edits), re-ask only interview answers that are stale, and apply the delta. If the config is
 missing but the kit is installed (a pre-manifest install): reconstruct answers from the installed

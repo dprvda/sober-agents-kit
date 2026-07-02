@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# REASON: cross-platform installer for the dprvda-kit — copies the template payload into a target
-# repo (or promotes it in place), namespaces it under .claude/<kit>, substitutes the project name,
+# REASON: cross-platform installer for the agent-kit — copies the template payload into a target
+# repo (or promotes it in place), namespaces it under a root-level .<kit> dir, substitutes the project name,
 # wires optional language packs, strips opt-out modules, sizes the SessionStart injector to the
 # target's corpus, and installs pre-commit. One Python implementation serves both the PowerShell and
 # bash wrappers instead of duplicating fragile JSON-editing logic in two shells.
-"""dprvda-kit installer.
+"""agent-kit installer.
 
 Usage:
   python install.py --target /path/to/repo [options]   # install into an existing repo
@@ -16,14 +16,15 @@ Options:
   --here               install into the current working directory
   --project-name NAME  value for __PROJECT_NAME__ (default: target folder name)
   --project-owner OWN  value for __PROJECT_OWNER__ in .mcp.json (default: blank)
-  --kit-name NAME      namespace dir under .claude/ (default: dprvda-kit)
+  --kit-name NAME      the root-level kit dir name, dot-prefixed (default: agent-kit -> .agent-kit/)
   --tools LIST         comma list of AI tools this repo is used with:
                        claude,codex,openclaw,hermes (default: claude).
-                       codex/openclaw -> skills are mirrored into .agents/skills/ (the
-                       agentskills.io location both read); openclaw/hermes -> the copy command
-                       for their user-level skills dir is printed (never written to $HOME);
-                       without claude -> the Claude-only live layer (settings.json, hooks/,
-                       session injector) is stripped. The git-level gates install for every tool.
+                       Skills are canonical in .agents/skills/ (agentskills.io — Codex + OpenClaw
+                       read it natively); with claude they are mirrored into .claude/skills/.
+                       Without claude the Claude adapter (settings.json, .agent-kit/adapters/claude/) is
+                       stripped. The git-level gates + the session module install for every tool.
+  --install-user-skills  also copy the skills into the user-level dirs of the chosen tools
+                       (~/.openclaw/skills, ~/.hermes/skills) instead of only printing the command
   --rust               also install the Rust pack (cargo-audit, cargo-vet, binary-secrets)
   --python             also install the Python pack (ruff lint)
   --no-ai-judge        do NOT install the AI code-review judge (critic_llm*, launch hook)
@@ -74,12 +75,12 @@ def copy_payload(src: Path, dst: Path) -> list[str]:
             if item.name in APPEND_IF_EXISTS:
                 existing = out.read_text(encoding="utf-8")
                 add = item.read_text(encoding="utf-8")
-                if "dprvda-kit" not in existing:
-                    out.write_text(existing.rstrip() + "\n\n# --- dprvda-kit ---\n" + add, encoding="utf-8")
+                if "agent-kit" not in existing:
+                    out.write_text(existing.rstrip() + "\n\n# --- agent-kit ---\n" + add, encoding="utf-8")
                     notes.append(f"appended kit rules to existing {rel}")
                 continue
             if item.name in KEEP_BOTH:
-                side = out.with_name(out.stem + ".dprvda-kit" + out.suffix)
+                side = out.with_name(out.stem + ".agent-kit" + out.suffix)
                 shutil.copy2(item, side)
                 notes.append(f"{rel} already exists — wrote {side.name} alongside; MERGE MANUALLY")
                 continue
@@ -104,18 +105,24 @@ def substitute(dst: Path, project_name: str, project_owner: str) -> None:
                 p.write_text(s, encoding="utf-8")
 
 
+def kit_dir(dst: Path, kit_name: str) -> Path:
+    # The kit machinery lives at the repo ROOT (tool-neutral home), dot-prefixed:
+    # .agent-kit/ by default, .<kit-name>/ after a rename.
+    return dst / f".{kit_name}"
+
+
 def rename_kit(dst: Path, kit_name: str) -> None:
-    if kit_name == "dprvda-kit":
+    if kit_name == "agent-kit":
         return
-    src = dst / ".claude" / "dprvda-kit"
+    src = dst / ".agent-kit"
     if src.exists():
-        src.rename(dst / ".claude" / kit_name)
+        src.rename(kit_dir(dst, kit_name))
     # rewrite references in the wiring files
     for rel in (".claude/settings.json", ".pre-commit-config.yaml",
-                f".claude/{kit_name}/hooks/check-script-launch.py"):
+                f".{kit_name}/adapters/claude/hooks/check-script-launch.py"):
         f = dst / rel
         if f.exists():
-            f.write_text(f.read_text(encoding="utf-8").replace("dprvda-kit", kit_name), encoding="utf-8")
+            f.write_text(f.read_text(encoding="utf-8").replace("agent-kit", kit_name), encoding="utf-8")
 
 
 def install_pack(dst: Path, kit_name: str, pack: str, roster_entries: list[tuple[str, str]]) -> None:
@@ -123,7 +130,7 @@ def install_pack(dst: Path, kit_name: str, pack: str, roster_entries: list[tuple
     if not pack_gates.exists():
         warn(f"pack '{pack}' not found, skipping")
         return
-    gates_dst = dst / ".claude" / kit_name / "gates"
+    gates_dst = kit_dir(dst, kit_name) / "gates"
     for g in pack_gates.glob("*.py"):
         shutil.copy2(g, gates_dst / g.name)
     # append roster entries to run_gates_parallel.py PHASE2_GATES
@@ -144,10 +151,10 @@ def strip_ai_judge(dst: Path, kit_name: str) -> None:
     # critic_llm_commit.py — its deterministic Conventional-Commits format check
     # needs no key, and its optional LLM cross-check already soft-passes without one.
     # The dispatcher existence-filters critic_llm, so no roster edit is needed.
-    base = dst / ".claude" / kit_name
+    base = kit_dir(dst, kit_name)
     (base / "gates" / "critic_llm.py").unlink(missing_ok=True)
     (base / "gates" / "prompts" / "critic_llm.md").unlink(missing_ok=True)
-    (base / "hooks" / "check-script-launch.py").unlink(missing_ok=True)
+    (base / "adapters" / "claude" / "hooks" / "check-script-launch.py").unlink(missing_ok=True)
     _strip_settings_hook(dst, "check-script-launch.py")
     log("AI per-file judge omitted (--no-ai-judge); commit-msg format validation kept")
 
@@ -155,7 +162,7 @@ def strip_ai_judge(dst: Path, kit_name: str) -> None:
 def strip_mcp(dst: Path, kit_name: str) -> None:
     (dst / ".mcp.json").unlink(missing_ok=True)
     for h in ("nudge-to-serena.py", "nudge-to-github-mcp.py"):
-        (dst / ".claude" / kit_name / "hooks" / h).unlink(missing_ok=True)
+        (kit_dir(dst, kit_name) / "adapters" / "claude" / "hooks" / h).unlink(missing_ok=True)
     _strip_settings_hook(dst, "nudge-to-serena.py")
     _strip_settings_hook(dst, "nudge-to-github-mcp.py")
     log("MCP config omitted (--no-mcp)")
@@ -181,7 +188,7 @@ def _strip_settings_hook(dst: Path, script_name: str) -> None:
 
 
 def size_sessionstart(dst: Path, kit_name: str) -> None:
-    inj = dst / ".claude" / kit_name / "inject_context_docs.py"
+    inj = kit_dir(dst, kit_name) / "session" / "inject_context_docs.py"
     if not inj.exists():
         return
     try:
@@ -193,7 +200,7 @@ def size_sessionstart(dst: Path, kit_name: str) -> None:
         return
     n = max(1, min(n, 200))
     f, data = _load_settings(dst)
-    cmd = f'python "$CLAUDE_PROJECT_DIR/.claude/{kit_name}/inject_context_docs.py"'
+    cmd = f'python "$CLAUDE_PROJECT_DIR/.{kit_name}/session/inject_context_docs.py"'
     entries = [{"type": "command", "command": f"{cmd} --chunk {i}", "timeout": 10} for i in range(1, n + 1)]
     for ss in data.get("hooks", {}).get("SessionStart", []):
         ss["hooks"] = entries
@@ -201,11 +208,11 @@ def size_sessionstart(dst: Path, kit_name: str) -> None:
     log(f"sized SessionStart to {n} chunk(s)")
 
 
-def mirror_skills_for_agents(dst: Path) -> None:
-    # Codex + OpenClaw read repo-level skills from .agents/skills/ (the agentskills.io
-    # convention); Claude Code reads .claude/skills/. Mirror so one skill set serves both.
-    src = dst / ".claude" / "skills"
-    out = dst / ".agents" / "skills"
+def mirror_skills_for_claude(dst: Path) -> None:
+    # The canonical skills home is the cross-tool .agents/skills/ (agentskills.io — Codex +
+    # OpenClaw read it natively). Claude Code reads .claude/skills/, so mirror for it.
+    src = dst / ".agents" / "skills"
+    out = dst / ".claude" / "skills"
     if not src.exists():
         return
     for item in src.rglob("*"):
@@ -216,20 +223,50 @@ def mirror_skills_for_agents(dst: Path) -> None:
         else:
             o.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(item, o)
-    log("mirrored skills into .agents/skills/ (Codex / OpenClaw)")
+    log("mirrored skills into .claude/skills/ (Claude Code)")
 
 
 def strip_claude_live_layer(dst: Path, kit_name: str) -> None:
     # No Claude Code in the tool list: the live layer (settings hooks, session injector,
     # in-session guards) has nothing to run it. The git-level gates + AGENTS.md + skills stay.
-    base = dst / ".claude"
-    (base / "settings.json").unlink(missing_ok=True)
-    (base / "settings.local.json.example").unlink(missing_ok=True)
-    (base / kit_name / "inject_context_docs.py").unlink(missing_ok=True)
-    hooks = base / kit_name / "hooks"
-    if hooks.exists():
-        shutil.rmtree(hooks)
-    log("Claude Code live layer omitted (no 'claude' in --tools); git-level gates kept")
+    claude_dir = dst / ".claude"
+    if claude_dir.exists():
+        shutil.rmtree(claude_dir)
+    adapter = kit_dir(dst, kit_name) / "adapters" / "claude"
+    if adapter.exists():
+        shutil.rmtree(adapter)
+    (dst / ".mcp.json").unlink(missing_ok=True)  # Claude's MCP config file — nothing reads it
+    # cut the fenced Claude blocks out of AGENTS.md (the link gate would rightly flag them)
+    agents = dst / "AGENTS.md"
+    if agents.exists():
+        import re
+        s = agents.read_text(encoding="utf-8")
+        s = re.sub(r"<!-- claude-adapter-start -->.*?<!-- claude-adapter-end -->\n?", "", s, flags=re.S)
+        agents.write_text(s, encoding="utf-8")
+    log("Claude Code adapter omitted (no 'claude' in --tools); git-level gates + session kept")
+
+
+def install_user_skills(dst: Path, tools: set[str]) -> None:
+    # Opt-in only (--install-user-skills): writes into the user's HOME for tools whose skill
+    # dir is user-level. Never silent — each copy is logged.
+    src = dst / ".agents" / "skills"
+    if not src.exists():
+        return
+    targets = []
+    if "openclaw" in tools:
+        targets.append(Path.home() / ".openclaw" / "skills")
+    if "hermes" in tools:
+        targets.append(Path.home() / ".hermes" / "skills")
+    for tgt in targets:
+        for item in src.rglob("*"):
+            rel = item.relative_to(src)
+            o = tgt / rel
+            if item.is_dir():
+                o.mkdir(parents=True, exist_ok=True)
+            else:
+                o.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(item, o)
+        log(f"skills copied to {tgt}")
 
 
 def run_precommit(dst: Path) -> None:
@@ -237,7 +274,7 @@ def run_precommit(dst: Path) -> None:
         log("pre-commit not found; install with: pip install pre-commit")
         return
     for args in (["pre-commit", "install"],
-                 ["pre-commit", "install", "--hook-type", "commit-msg", "--hook-type", "post-commit"]):
+                 ["pre-commit", "install", "--hook-type", "commit-msg", "--hook-type", "post-commit", "--hook-type", "pre-push"]):
         subprocess.run(args, cwd=dst, check=False)
     log("pre-commit hooks installed")
 
@@ -248,13 +285,14 @@ def main() -> int:
     ap.add_argument("--here", action="store_true")
     ap.add_argument("--project-name")
     ap.add_argument("--project-owner", default="")
-    ap.add_argument("--kit-name", default="dprvda-kit")
+    ap.add_argument("--kit-name", default="agent-kit")
     ap.add_argument("--tools", default="claude")
     ap.add_argument("--rust", action="store_true")
     ap.add_argument("--python", action="store_true")
     ap.add_argument("--no-ai-judge", action="store_true")
     ap.add_argument("--no-mcp", action="store_true")
     ap.add_argument("--no-precommit", action="store_true")
+    ap.add_argument("--install-user-skills", action="store_true")
     args = ap.parse_args()
 
     if args.here:
@@ -273,27 +311,28 @@ def main() -> int:
         warn(f"unknown tool '{t}' in --tools (known: {', '.join(sorted(known))}); "
              "the git-level gates + AGENTS.md cover it anyway")
 
-    log(f"installing dprvda-kit into {dst} (tools: {', '.join(sorted(tools))})")
+    log(f"installing agent-kit into {dst} (tools: {', '.join(sorted(tools))})")
     notes = copy_payload(TEMPLATE, dst)
 
     if args.no_ai_judge:
-        strip_ai_judge(dst, "dprvda-kit")
+        strip_ai_judge(dst, "agent-kit")
     if args.no_mcp:
-        strip_mcp(dst, "dprvda-kit")
+        strip_mcp(dst, "agent-kit")
     if args.rust:
-        install_pack(dst, "dprvda-kit", "rust",
+        install_pack(dst, "agent-kit", "rust",
                      [("check_cargo_audit", "check_cargo_audit.py"), ("check_cargo_vet", "check_cargo_vet.py")])
     if args.python:
-        install_pack(dst, "dprvda-kit", "python", [("check_python_lint", "check_python_lint.py")])
+        install_pack(dst, "agent-kit", "python", [("check_python_lint", "check_python_lint.py")])
 
     rename_kit(dst, args.kit_name)
     substitute(dst, project_name, args.project_owner)
-    if tools & {"codex", "openclaw"}:
-        mirror_skills_for_agents(dst)
     if "claude" in tools:
+        mirror_skills_for_claude(dst)
         size_sessionstart(dst, args.kit_name)
     else:
         strip_claude_live_layer(dst, args.kit_name)
+    if args.install_user_skills:
+        install_user_skills(dst, tools)
     if not args.no_precommit:
         run_precommit(dst)
 
@@ -314,8 +353,7 @@ def main() -> int:
         print("  *  OpenClaw: skills are project-level in .agents/skills/; for the user-level dir run:")
         print(f"     cp -r {(dst / '.agents' / 'skills').as_posix()}/* ~/.openclaw/skills/")
     if "hermes" in tools:
-        print("  *  Hermes reads AGENTS.md/CLAUDE.md; install skills user-level:")
-        print(f"     cp -r {(dst / '.claude' / 'skills').as_posix()}/* ~/.hermes/skills/")
+        print("  *  Hermes reads AGENTS.md/CLAUDE.md; skills go user-level (~/.hermes/skills/).")
     print("  *  Make a test commit to see the gates run (they protect EVERY tool, git-level).")
     return 0
 

@@ -1,5 +1,5 @@
 # USER-AUTHORIZED 2026-04-29: unavailable_pass behavior — same as
-# .claude/dprvda-kit/gates/critic_llm.py, when the judge API is unreachable / key
+# .agent-kit/gates/critic_llm.py, when the judge API is unreachable / key
 # missing / call fails, the gate exits 0 and the commit proceeds.
 # Best-effort AI judge, not a hard gate. NOT a banned bypass — fires
 # only on a verifiable provider-outage condition, no user toggle.
@@ -31,12 +31,12 @@ Config (environment, OpenAI-compatible /v1/chat/completions):
   LLM_JUDGE_MODEL     — default deepseek-chat
 
 Usage:
-    python .claude/dprvda-kit/gates/critic_llm_commit.py <path-to-commit-msg-file>
+    python .agent-kit/gates/critic_llm_commit.py <path-to-commit-msg-file>
 
 Pre-commit framework wires this as:
     - id: critic_llm_commit
       stages: [commit-msg]
-      entry: python .claude/dprvda-kit/gates/critic_llm_commit.py
+      entry: python .agent-kit/gates/critic_llm_commit.py
       args: [--commit-msg-file]
 """
 
@@ -53,7 +53,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Closed type/scope vocabularies. Edit here when project rules change.
 ALLOWED_TYPES = {

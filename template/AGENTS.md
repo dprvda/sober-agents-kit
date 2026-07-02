@@ -2,16 +2,26 @@
 
 This file is **rules-only** — the ONE canonical instruction file, read natively by Codex / Cursor /
 OpenClaw / Hermes / Continue / Aider / any AGENTS.md-aware tool, and imported by Claude Code via the
-one-line CLAUDE.md. State / architecture / reference docs live under `docs/`. The Claude-Code-specific
-wiring (live hooks, session memory) is specced in [`README-CLAUDE.md`](README-CLAUDE.md). The kit's
-machinery lives under [`.claude/dprvda-kit/`](.claude/dprvda-kit/). Keep this file short
+one-line CLAUDE.md. State / architecture / reference docs live under `docs/`. The kit's
+machinery lives under [`.agent-kit/`](.agent-kit/). Keep this file short
 (`check_md_size` enforces a budget); link, don't duplicate.
+<!-- claude-adapter-start -->
+The Claude-Code-specific wiring (live hooks, settings) is specced in
+[the Claude adapter README](.agent-kit/adapters/claude/README.md).
+<!-- claude-adapter-end -->
 
 <!-- FILL IN: one or two sentences on what this project IS, so a fresh session is oriented. -->
 
+## FIRST ACTION of every session (all tools)
+
+Run `python .agent-kit/session/inject_context_docs.py --all` and read its output BEFORE doing
+anything else: it prints the project spine (key docs, the live progress ledger, recent state) so
+you never start blind. Claude Code runs this automatically at session start; every other agent
+runs it as this file's first instruction.
+
 ## Pre-commit gates (enforced on `git commit` — NEVER `--no-verify`)
 
-Dispatcher: `.claude/dprvda-kit/gates/run_gates_parallel.py` (phase 1 serial → phase 2 parallel).
+Dispatcher: `.agent-kit/gates/run_gates_parallel.py` (phase 1 serial → phase 2 parallel).
 
 - `critic_llm` — AI judge over each staged source file. Soft-passes when `LLM_JUDGE_API_KEY` is
   unset. On a real issue it prepends `=== LLM_REVIEW_BLOCK ===` to the file (see protocol below).
@@ -20,6 +30,8 @@ Dispatcher: `.claude/dprvda-kit/gates/run_gates_parallel.py` (phase 1 serial →
 - `check_doc_freshness` — folder READMEs + `tracks_dir:` cascade + orphan-md contract.
 - `check_md_size` — per-doc character budget.
 - `check_secrets` — staged text scanned for secret-shaped strings (keys, tokens, private keys).
+- `check_force_push` (pre-push stage) — blocks force-pushes and remote branch deletions for
+  EVERY tool and every human clone (escape: `AGENT_KIT_ALLOW_FORCE_PUSH=1`, deliberate only).
 
 A hook failure blocks the commit. **Fix the cause — never bypass.**
 
@@ -59,7 +71,8 @@ Time horizons ("by morning", "while I'm away") are DEADLINES, not scopes. Don't 
 quality bar stays full per item. Backlog empty → write a short autopilot-proposal doc and continue
 on docs/cleanup. Never auto-pause.
 
-## Live hooks — Claude Code only (`.claude/settings.json` → `.claude/dprvda-kit/hooks/`)
+<!-- claude-adapter-start -->
+## Live hooks — Claude Code only (`.claude/settings.json` → `.agent-kit/adapters/claude/hooks/`)
 
 When the session runs in Claude Code, these fire in-session (other tools rely on the git-level
 gates above, which protect every tool):
@@ -68,13 +81,14 @@ gates above, which protect every tool):
   `clean -f`, `checkout/restore .`, `branch -D`, `filter-branch`). Normal `push` to any branch is fine.
 - `check-script-launch.py` — runs the AI judge on a script before Bash launches it; blocks only on
   `severity=block`; fail-open.
-- `remind-claude-md.py` — re-injects this file's critical sections on `git commit`.
 - `nudge-to-*` — soft PostToolUse suggestions to use MCP tools (never block).
+<!-- claude-adapter-end -->
 
 ## Skills (saved procedures — invoke by name in any tool that reads them)
 
-Cross-tool SKILL.md format (agentskills.io). Claude Code reads `.claude/skills/`; Codex and
-OpenClaw read the mirrored `.agents/skills/` when installed with those tools.
+Cross-tool SKILL.md format (agentskills.io). The canonical home is `.agents/skills/` (Codex and
+OpenClaw read it natively; Hermes copies from it); Claude Code reads the `.claude/skills/` mirror
+made at install.
 
 - `sober-setup` — audit/update this project's kit setup (playbook lives in the kit repo)
 - `handoff` — save verified progress notes so the next session continues without re-explaining

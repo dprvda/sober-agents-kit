@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # REASON: PreToolUse Bash hook — when the bash command is about to launch a script
 # (python <file>.py / bash <file>.sh / ./<file>.{py,sh,bash}), it spawns the AI judge
-# .claude/dprvda-kit/gates/critic_llm.py --files <target> --no-mutate to get a verdict on that
+# .agent-kit/gates/critic_llm.py --files <target> --no-mutate to get a verdict on that
 # script before it runs, and blocks the launch only on severity=block. The judge
 # prepends an LLM_REVIEW_BLOCK comment into the source file on warn/block (a
 # truncation-safe persistent record that survives stderr truncation, context clears,
@@ -10,10 +10,10 @@
 # unavailable / timeout / internal error because an offline session still needs to
 # run scripts, instead of hard-blocking every launch when the API is down.
 """
-.claude/dprvda-kit/hooks/check-script-launch.py
+.agent-kit/adapters/claude/hooks/check-script-launch.py
 
 PreToolUse hook for Claude Code Bash tool. When the command is about to
-launch a script, fan it through the AI judge `.claude/dprvda-kit/gates/critic_llm.py`
+launch a script, fan it through the AI judge `.agent-kit/gates/critic_llm.py`
 in working-tree mode. Block only when the judge returns severity=block.
 
 Detection (file extracted from command via regex):
@@ -63,7 +63,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(os.environ.get("CLAUDE_PROJECT_DIR", "."))
-GATE = REPO_ROOT / ".claude" / "dprvda-kit" / "gates" / "critic_llm.py"
+GATE = REPO_ROOT / ".claude" / "agent-kit" / "gates" / "critic_llm.py"
 SIDECAR_DIR = REPO_ROOT / ".llm-review"
 
 # Hard wall on the AI call. Cold judge calls typically land in 5-15 s; the
@@ -73,7 +73,7 @@ GATE_TIMEOUT_S = 22
 
 
 def sidecar_path_for(target: Path) -> Path:
-    """Mirror .claude/dprvda-kit/gates/critic_llm.py::sidecar_path_for so the hook
+    """Mirror .agent-kit/gates/critic_llm.py::sidecar_path_for so the hook
     can name the persistent verdict record without parsing JSON output."""
     rel = target.relative_to(REPO_ROOT) if target.is_absolute() else target
     safe = rel.as_posix().replace("/", "__")
@@ -197,8 +197,8 @@ def main() -> int:
         "  4. Re-issue the command — the sidecar cache will re-review on the\n"
         "     new sha256 and pass once the issues are gone (the judge also\n"
         "     auto-strips the block on the next ok verdict).\n"
-        "\nGate: .claude/dprvda-kit/gates/critic_llm.py.\n"
-        "Hook: .claude/dprvda-kit/hooks/check-script-launch.py.\n",
+        "\nGate: .agent-kit/gates/critic_llm.py.\n"
+        "Hook: .agent-kit/adapters/claude/hooks/check-script-launch.py.\n",
         file=sys.stderr,
     )
     return 2

@@ -1,10 +1,10 @@
 ---
 tracks_dir:
-  - .claude/dprvda-kit/hooks/
+  - .agent-kit/adapters/claude/hooks/
   - .claude/skills/
   - .claude/settings.json
   - CLAUDE.md
-  - .claude/dprvda-kit/gates/
+  - .agent-kit/gates/
   - .pre-commit-config.yaml
 ---
 # Claude Code setup — what's special about this repo
@@ -17,7 +17,7 @@ Manual for ~3 layers of Claude Code customisation not in vanilla `claude-code`. 
 > - **Project rules** in `CLAUDE.md` (refreshed every commit by a hook).
 > - **Custom skills** (`/handoff`, `/tdd`, `/compact-docs`, …) for repeatable multi-step workflows.
 
-The AI-judge prompt (`.claude/dprvda-kit/gates/prompts/critic_llm.md` + the per-project `project-context.md`) stays in sync with `CLAUDE.md`'s critical-domain rules — a rule rewrite updates all surfaces in one commit, so judges flag re-introduced removed code paths. Judge env vars: `LLM_JUDGE_API_KEY`, `LLM_JUDGE_BASE_URL`, `LLM_JUDGE_MODEL` — any OpenAI-compatible host; the recommended free judge is the NVIDIA build endpoint (see `.env.example`). In-source marker: `=== LLM_REVIEW_BLOCK ===`. Sidecar dir: `.llm-review/`.
+The AI-judge prompt (`.agent-kit/gates/prompts/critic_llm.md` + the per-project `project-context.md`) stays in sync with `CLAUDE.md`'s critical-domain rules — a rule rewrite updates all surfaces in one commit, so judges flag re-introduced removed code paths. Judge env vars: `LLM_JUDGE_API_KEY`, `LLM_JUDGE_BASE_URL`, `LLM_JUDGE_MODEL` — any OpenAI-compatible host; the recommended free judge is the NVIDIA build endpoint (see `.env.example`). In-source marker: `=== LLM_REVIEW_BLOCK ===`. Sidecar dir: `.llm-review/`.
 
 ---
 
@@ -55,7 +55,6 @@ each hook's `# REASON:`.
 |---|---|---|
 | `block-dangerous-git.py` | `git push --force/-f`, `--mirror`, `--delete`, `reset --hard`, `clean -f`, `checkout/restore .`, `branch -D`, `filter-branch`, `reflog expire`. Normal `git push` to any branch is allowed. | none — physical block |
 | `check-script-launch.py` | `python foo.py` / `bash foo.sh` / `./foo.{py,sh,bash}` whose target the AI judge (`critic_llm.py`, working-tree mode) returns `severity=block` on. On warn/block the judge prepends an in-source `=== LLM_REVIEW_BLOCK ===` comment + the hook surfaces the sidecar JSON path. | fail-open — judge unreachable / key missing / timeout / rc=2 → launch allowed. Unblock a real `block`: read the REVIEW_BLOCK, fix the line-numbered issues, drop the block, re-run. |
-| `remind-claude-md.py` | nothing (passes silently); fires on `git commit`, re-injects critical `CLAUDE.md` sections to stderr | n/a |
 | `nudge-to-foreground-git.py` | nothing — soft `PostToolUse:Bash` JSON-additionalContext nudge fires when a `git commit` / `git push` / `pre-commit run` is dispatched with `run_in_background=true`. Suggests the foreground pattern which keeps commits at the ~20s baseline rather than perceived 5+ min hangs. | n/a (always exit 0) |
 | `nudge-to-github-mcp.py` | nothing — soft nudge when raw `gh issue/pr/api` reads run; suggests the GitHub MCP tools instead | n/a (always exit 0) |
 | `nudge-to-serena.py` | nothing — soft nudge when Grep hits code dirs; suggests the serena code-intel MCP (edit `CODE_DIR_PREFIXES` per project) | n/a (always exit 0) |
@@ -88,7 +87,7 @@ A "skill" is a multi-step workflow Claude invokes by name; each lives in
 ## Layer 2 — Pre-commit gates (strict, no bypass flags)
 
 Wired in `.pre-commit-config.yaml`, run on every `git commit` via
-`.claude/dprvda-kit/gates/run_gates_parallel.py` (`PHASE1_GATES + PHASE2_GATES` =
+`.agent-kit/gates/run_gates_parallel.py` (`PHASE1_GATES + PHASE2_GATES` =
 authoritative roster). **Two phases:** Phase 1 — serial, fail-fast,
 mutates the working tree (code discipline): `critic_llm` →
 `check_file_reason`. Phase 2 — parallel (ThreadPoolExecutor,
@@ -137,7 +136,7 @@ flag. Catches parser regressions that silently let drift through.
 
 ## Layer 3 — Project conventions (`CLAUDE.md`)
 
-`CLAUDE.md` (repo root) is **rules-only**. State, architecture, reference docs live under `docs/` (decisions in `docs/decisions/`); gate roster + per-tier numbers live in **this file**, linked not duplicated. `remind-claude-md.py` re-prints its critical sections to stderr on every `git commit`. Global `~/.claude/CLAUDE.md` carries universal rules; both files re-inject every commit.
+`CLAUDE.md` (repo root) is **rules-only**. State, architecture, reference docs live under `docs/` (decisions in `docs/decisions/`); gate roster + per-tier numbers live in **this file**, linked not duplicated. Global `~/.claude/CLAUDE.md` carries universal rules; both files re-inject every commit.
 
 Key sections (adapt per project): pre-commit gates · NO-bypasses ban-list · `archive/` out-of-context · Tempo (deadlines fit dozens of tasks) · critical domain rules · pre-approved autonomous ops · PreToolUse hooks · skill/slash commands.
 
@@ -159,7 +158,7 @@ prints this at the top, so an AI session sees it AT triage time.
 
 1. **Copy `.claude/`** — hooks, skills, slash commands for free.
 2. **Adapt `CLAUDE.md`** — your own rules-only file; keep it short.
-3. **Copy `.claude/dprvda-kit/gates/check_*.py` + `_git_mtime.py`** — start with
+3. **Copy `.agent-kit/gates/check_*.py` + `_git_mtime.py`** — start with
    `check_doc_freshness`, `check_file_reason`, `check_links`,
    `check_md_size`; adapt the exempt-dir list.
 4. **Copy `test_check_doc_freshness.py`** — the canary protects the
@@ -180,8 +179,8 @@ caught.
 
 - `CLAUDE.md` — project rules (always loaded) · `~/.claude/CLAUDE.md` —
   universal discipline rules
-- `.claude/dprvda-kit/docs/context-framework.md` — doc-authoring tiers + freshness cascade
-- `.claude/dprvda-kit/docs/parallel-agents.md` — multi-agent worktree discipline + cwd-drift rules
+- `.agent-kit/docs/context-framework.md` — doc-authoring tiers + freshness cascade
+- `.agent-kit/docs/parallel-agents.md` — multi-agent worktree discipline + cwd-drift rules
 - `docs/decisions/README.md` — ADR index
 - `.pre-commit-config.yaml` + `.claude/settings.json` — gate/hook wiring
-- `.claude/dprvda-kit/gates/run_gates_parallel.py` — authoritative gate roster
+- `.agent-kit/gates/run_gates_parallel.py` — authoritative gate roster

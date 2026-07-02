@@ -45,12 +45,14 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Folders / paths the gate skips entirely (auto-generated, mirrored,
 # archived, vendored). Edit this list to match your project layout.
 EXEMPT_PREFIXES = (
-    ".claude/",          # the kit's own config (skills, prompts, docs) — not project prose
+    ".claude/",          # Claude runtime dirs (handoffs, session files) — not project prose
+    ".agent-kit/",       # the kit's own machinery (gates, frameworks, docs)
+    ".agents/",          # cross-tool skills dir
     "archive/",
     "docs/archive/",
     "vendor/",
@@ -92,8 +94,8 @@ TIERS = [
     # CLAUDE.md -- loaded into EVERY session preamble; kept tight.
     (re.compile(r"^CLAUDE\.md$"),
      "claude-md", 16800),
-    # Project-rules / framework docs (README-CLAUDE.md, AGENTS.md, README.md).
-    (re.compile(r"^(README-CLAUDE|AGENTS|README)\.md$"),
+    # Project-rules / framework docs (.agent-kit/adapters/claude/README.md, AGENTS.md, README.md).
+    (re.compile(r"^(AGENTS|README)\.md$"),
      "framework-rules", 19500),
     # Sub-folder READMEs (deep), e.g. src/foo/README.md.
     (re.compile(r"^[^/]+/.+/README\.md$"),

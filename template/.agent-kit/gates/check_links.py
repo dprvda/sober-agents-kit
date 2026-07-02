@@ -47,7 +47,7 @@ import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DOCS_ROOT = REPO_ROOT / "docs"
 
 # Source files where broken links are tolerated (auto-generated /

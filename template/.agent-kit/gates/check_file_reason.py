@@ -47,7 +47,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Configurable: add or remove extensions to match the languages your project uses.
 SCRIPT_EXTS = {".py", ".rs", ".sh", ".bash"}
@@ -55,6 +55,9 @@ SCRIPT_EXTS = {".py", ".rs", ".sh", ".bash"}
 # Directories never scanned in whole-repo mode.
 EXEMPT_DIR_PARTS = {
     ".git", ".github", ".cache", ".pytest_cache", ".mypy_cache",
+    # vendored skills (agentskills.io folders) carry third-party helper scripts;
+    # the REASON contract governs PROJECT scripts, not imported procedures.
+    ".agents", ".claude",
     ".ruff_cache", "target", "venv", ".venv", "env", "node_modules",
     "__pycache__", "dist", "build", "data", "runs", "logs",
     ".idea", "archive",
