@@ -3,7 +3,7 @@ frozen_at: 2026-07-02
 ---
 # Stack guide — SaaS web app (agent-native defaults, verified 2026-07)
 
-Injected by /setup-pravda-skills as `docs/STACK.md`. Every pick below passes the agent-legibility
+Injected by /sober-setup as `docs/STACK.md`. Every pick below passes the agent-legibility
 test: full API + key auth, an OFFICIAL MCP server, machine-readable docs, a free tier the agent
 can self-serve. Sources: vendor docs verified 2026-07 (Vercel/Neon/Stripe/Clerk/Resend/Sentry).
 

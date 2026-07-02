@@ -1,6 +1,6 @@
 # Skills catalog — everything validated by the 2026-07 research (967 sources) + hands-on eval
 
-The /setup-pravda-skills interview FILTERS this catalog per project (archetype, UI, parallel
+The /sober-setup interview FILTERS this catalog per project (archetype, UI, parallel
 agents, overnight runs) and proposes ≤12. Descriptions follow the cold-user rule: outcomes, not
 jargon. Grades: ★ = installed + tested by us hands-on · ✓ = read file-by-file · ~ = corpus-reported
 (practitioner sources, not independently run). Licenses verified where graded ★/✓.

@@ -1,9 +1,9 @@
 ---
-name: setup-pravda-skills
-description: Interactive installer + auditor for the sober-agents-kit. Interviews the user about their project (what it is, stack, scopes, enforcement level, judge provider), then installs and configures exactly the hooks/gates/skills that fit, writes the judge's project context, proposes vetted third-party skill packs with install commands, and emits a personal how-to-work cheatsheet. Run it in a NEW project to set up from zero, or in an already-kitted project to audit/update the setup. Trigger on "/setup-pravda-skills", "set up the kit", "install the claude code kit", "audit my claude setup".
+name: sober-setup
+description: Interactive installer + auditor for the sober-agents-kit. Interviews the user about their project (what it is, stack, scopes, enforcement level, judge provider), then installs and configures exactly the hooks/gates/skills that fit, writes the judge's project context, proposes vetted third-party skill packs with install commands, and emits a personal how-to-work cheatsheet. Run it in a NEW project to set up from zero, or in an already-kitted project to audit/update the setup. Trigger on "/sober-setup", "set up the kit", "install the claude code kit", "audit my claude setup".
 ---
 
-# /setup-pravda-skills — the interview-driven kit installer
+# /sober-setup — the interview-driven kit installer
 
 You are setting up (or auditing) a project's Claude Code discipline layer. The kit's machinery
 lives in this repo under `template/`; `install.py` copies it. Your job is everything `install.py`
@@ -73,7 +73,7 @@ Batch A (the project):
    per-archetype tables live at pravda.systems/blog/agent-native-stack-what-to-standardize-on.
    THE GUIDE IS OPTIONAL: if the stack is known/proposed, inject `docs/STACK.md` (stack + how an
    AI agent must behave on it); if the user wants to decide later, skip it and note in
-   kit.config.json that the guide is pending — re-running /setup-pravda-skills activates it any
+   kit.config.json that the guide is pending — re-running /sober-setup activates it any
    time. Nothing else in the setup depends on it.
 4. **Will multiple Claude sessions/agents work here in parallel?** (If yes: recommend native
    `claude --worktree` per stream, port/DB isolation notes in CLAUDE.md, and NO per-commit

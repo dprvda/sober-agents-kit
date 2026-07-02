@@ -7,7 +7,7 @@ blindly.**
 ```bash
 git clone https://github.com/dprvda/sober-agents-kit && cd sober-agents-kit
 claude
-> /setup-pravda-skills
+> /sober-setup
 ```
 
 The setup interviews you (~5 minutes, every question explained in plain words, "ask me" flips any

@@ -3,7 +3,7 @@ frozen_at: 2026-07-02
 ---
 # Stack guide — data pipeline / scraper / ETL (agent-native defaults, verified 2026-07)
 
-Injected by /setup-pravda-skills as `docs/STACK.md`.
+Injected by /sober-setup as `docs/STACK.md`.
 
 ## The stack
 | Layer | Pick | Agent surface |
