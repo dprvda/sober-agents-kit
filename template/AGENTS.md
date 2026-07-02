@@ -44,13 +44,10 @@ block (top marker through end), (4) re-stage + re-commit.
 
 ## Commit messages — Conventional Commits 1.0 (`commit-msg` gate)
 
-`<type>(<scope>)?!?: <subject ≤99>` → blank → body (WHY; required if >50 LOC) → blank → trailers.
+`<type>(<scope>)?!?: <subject ≤99>` → blank → body (WHY; required if >50 LOC).
 
 - **types**: `feat | fix | refactor | perf | docs | test | build | ci | chore | revert` (must match the diff).
 - **scopes** (EDIT for your project): `core | cli | api | ui | docs | build | ci | deps | meta`.
-- **trailers**: `Closes #N`, `Co-Authored-By:`, `BREAKING CHANGE:` (or `!`), `Tag: vX.Y.Z`
-  (strict SemVer; bump computed deterministically — any breaking → major, any `feat` → minor,
-  any `fix`/`perf`/`refactor` → patch).
 
 ## NO bypasses — fix the root cause
 

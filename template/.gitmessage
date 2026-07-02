@@ -2,12 +2,6 @@
 #
 # <body>  ← WHY, not what. Required when the diff is >50 LOC. Wrap at 72.
 #
-# <trailers>
-#   Closes #123
-#   Co-Authored-By: Name <email>
-#   BREAKING CHANGE: <what broke and the migration>
-#   Tag: v1.2.3        ← optional strict-SemVer release tag
-#
 # ── types ───────────────────────────────────────────────────────────────
 #   feat | fix | refactor | perf | docs | test | build | ci | chore | revert
 #   (type must match what the diff actually does)
