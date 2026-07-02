@@ -92,7 +92,7 @@ made at install.
 
 - `sober-setup` — audit/update this project's kit setup (playbook lives in the kit repo)
 - `handoff` — save verified progress notes so the next session continues without re-explaining
-- `graphify` — build/query a code knowledge graph; one query replaces reading ten files
+- `graphify` — standalone code-graph tool (bundled); one graph query replaces reading ten files
 - `systematic-debugging` — find the real cause before fixing; rethink after 3 failed attempts
 - `subagent-driven-development` — parallel isolated workers + an independent reviewer per task
 - `receiving-code-review` — verify review feedback before acting, never flatter
