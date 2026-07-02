@@ -167,6 +167,11 @@ The interview proposes ≤12 per project (past ~12 similar skills, agents pick t
 [the 33-entry researched catalog](template/.agent-kit/skills-catalog.md), which also
 grades the vetted third-party packs (Superpowers, Planning with Files, visual-eyes, ccusage, …).
 
+**Bundling policy:** only my own skills ship inside this repo. Every third-party skill the
+interview proposes (including the three Superpowers workflows we run daily:
+systematic-debugging, subagent-driven-development, receiving-code-review) is installed **from
+its original source** at setup, pinned to a commit SHA — listed here, never copied here.
+
 ### The framework fact-sheets
 
 13 dated one-pagers (`template/.agent-kit/frameworks/`) on Next.js, Vercel, Neon, Stripe,
