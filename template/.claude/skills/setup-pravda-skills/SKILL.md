@@ -1,6 +1,6 @@
 ---
 name: setup-pravda-skills
-description: Interactive installer + auditor for the agent-rails. Interviews the user about their project (what it is, stack, scopes, enforcement level, judge provider), then installs and configures exactly the hooks/gates/skills that fit, writes the judge's project context, proposes vetted third-party skill packs with install commands, and emits a personal how-to-work cheatsheet. Run it in a NEW project to set up from zero, or in an already-kitted project to audit/update the setup. Trigger on "/setup-pravda-skills", "set up the kit", "install the claude code kit", "audit my claude setup".
+description: Interactive installer + auditor for the sober-agents-kit. Interviews the user about their project (what it is, stack, scopes, enforcement level, judge provider), then installs and configures exactly the hooks/gates/skills that fit, writes the judge's project context, proposes vetted third-party skill packs with install commands, and emits a personal how-to-work cheatsheet. Run it in a NEW project to set up from zero, or in an already-kitted project to audit/update the setup. Trigger on "/setup-pravda-skills", "set up the kit", "install the claude code kit", "audit my claude setup".
 ---
 
 # /setup-pravda-skills — the interview-driven kit installer

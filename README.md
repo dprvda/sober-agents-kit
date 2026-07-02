@@ -1,11 +1,11 @@
-# agent-rails
+# sober-agents-kit
 
 **One command sets up a disciplined AI-coding project: safety gates, an independent AI judge,
 session memory, and a curated skill set — through a guided interview where nothing installs
 blindly.**
 
 ```bash
-git clone https://github.com/dprvda/agent-rails && cd agent-rails
+git clone https://github.com/dprvda/sober-agents-kit && cd sober-agents-kit
 claude
 > /setup-pravda-skills
 ```
@@ -87,14 +87,14 @@ discipline, agent-orchestration rules).
 
 **Into an existing repo:**
 ```sh
-git clone <this-repo> agent-rails
-cd agent-rails
+git clone <this-repo> sober-agents-kit
+cd sober-agents-kit
 python install.py --target /path/to/your-repo --rust          # or: ./install.sh / .\install.ps1
 ```
 
 **As a GitHub template** (new repo):
 ```sh
-gh repo create my-new-repo --template <owner>/agent-rails
+gh repo create my-new-repo --template <owner>/sober-agents-kit
 cd my-new-repo
 python install.py --here
 ```

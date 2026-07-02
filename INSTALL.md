@@ -6,7 +6,7 @@ files are thin wrappers). Requires **Python 3.9+** and **git**. `pre-commit` is 
 ## A. Into an existing repo (the common case)
 
 ```sh
-git clone <this-repo> agent-rails && cd agent-rails
+git clone <this-repo> sober-agents-kit && cd sober-agents-kit
 python install.py --target /path/to/your-repo [flags]
 # Windows:  .\install.ps1 --target C:\path\to\your-repo [flags]
 # bash:     ./install.sh   --target /path/to/your-repo [flags]
@@ -28,7 +28,7 @@ The installer:
 
 Mark this repo as a template on GitHub (Settings → Template repository), then:
 ```sh
-gh repo create my-new-repo --template <owner>/agent-rails
+gh repo create my-new-repo --template <owner>/sober-agents-kit
 cd my-new-repo
 python install.py --here
 ```
