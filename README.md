@@ -76,18 +76,29 @@ at the repo root (`CLAUDE.md`, `.pre-commit-config.yaml`, …) sit at the root.
 
 ```
 your-repo/
-├─ CLAUDE.md                 # rules-only, loaded every session (fill-in placeholders)
-├─ README-CLAUDE.md          # the full setup manual
-├─ AGENTS.md  .gitmessage  .pre-commit-config.yaml  .mcp.json  .env.example
+├─ AGENTS.md                 # THE standing rules — one canonical file, read natively
+│                            #   by Cursor / Codex / any AGENTS.md-aware tool   [ALL TOOLS]
+├─ CLAUDE.md                 # one-line bridge importing AGENTS.md for Claude   [Claude Code]
+├─ .pre-commit-config.yaml   # the safety gates — run on `git commit`, so they
+│                            #   protect you with ANY tool, or no tool at all   [ALL TOOLS]
+├─ .gitmessage  .mcp.json  .env.example  README-CLAUDE.md (the full manual)
 └─ .claude/
-   ├─ settings.json          # wires the hooks below
-   ├─ skills/                # /handoff /tdd /grill-me /caveman /to-issues /zoom-out …
-   └─ dprvda-kit/            # ← all kit machinery, namespaced
-      ├─ hooks/              # Claude Code tool hooks (git-safety, rule re-inject, MCP nudges)
-      ├─ gates/              # pre-commit gates + run_gates_parallel.py + prompts/ (editable judge prompts)
-      ├─ inject_context_docs.py   # SessionStart context injector
+   ├─ settings.json          # wires the live hooks below                       [Claude Code]
+   ├─ skills/                # /sober-setup /tdd /handoff /graphify …           [Claude Code]
+   └─ dprvda-kit/            # all kit machinery, namespaced (renamable at install)
+      ├─ gates/              # pre-commit gates + the AI judge + its prompts    [ALL TOOLS]
+      ├─ hooks/              # live in-session guards (git-safety, re-inject)   [Claude Code]
+      ├─ frameworks/         # verified 2026-07 fact-sheets about your tools    [ALL TOOLS]
+      ├─ stack-guides/  skills-catalog.md
+      ├─ inject_context_docs.py   # session memory: docs auto-load at start     [Claude Code]
       └─ docs/               # context-framework.md, parallel-agents.md
 ```
+
+**The honest split:** everything that runs on git (the gates, the AI judge, the doc-freshness
+checks) protects any workflow — Cursor, Codex, or a human typing alone. The LIVE layer (hooks
+that block mid-session, skills, automatic session memory) is Claude Code today, because that's
+where the hook API lives; ports to other harnesses are welcome, and AGENTS.md means your rules
+already travel.
 
 ### The three layers
 1. **Claude Code hooks** (`.claude/dprvda-kit/hooks/`) — physically block dangerous git ops, run the
