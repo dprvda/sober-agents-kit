@@ -15,6 +15,33 @@ question into a mini-interview), proposes everything from your answers, shows th
 what will land on your machine, and only then installs. Works with Claude Code fully; the commit
 safety gates are git-level and protect **any** AI tool (Cursor, Codex, …).
 
+## The story: why this kit exists
+
+A developer who ships with AI every day described his job like this: *"I haven't written a line
+of code in six months. My job now is managing six to ten occasionally drunk PhD students."*
+
+That's the honest state of coding agents in 2026. Brilliant, fast — and occasionally one of them
+guesses a leftover access token and deletes a production database **in 9 seconds, backups
+included**. Another burns **$6,000 of API credits overnight** in a hook loop. Another reports
+"all tests green" while every row lands in the wrong table. Real, documented incidents — not
+hypotheticals.
+
+Here's the uncomfortable finding underneath all of them: **telling the AI to behave doesn't
+work.** In one documented case a MANDATORY checklist written in three different places was still
+ignored twice in one session. Rules that live in prompts are advice. Rules that live in
+machinery — checks that physically block a commit, a second AI that reviews the first one's
+work, memory that survives restarts — actually hold.
+
+That's this kit: **the sober adult in the room**, so you don't have to be.
+
+It wasn't guessed together. It's built on two published studies — one on how expert operators
+actually run coding agents ([967 sources](https://pravda.systems/blog/run-parallel-ai-coding-agents-without-babysitting)),
+one on which platforms and tools agents can genuinely drive ([971 sources](https://pravda.systems/blog/agent-native-stack-what-to-standardize-on)) —
+plus hands-on installs of every major community pack (several of which turned out to have
+silently broken hooks; the survivors are in [the catalog](template/.claude/dprvda-kit/skills-catalog.md)).
+Every gate in this kit maps to a real incident from that research. Every recommendation carries
+its receipt.
+
 ## The setup, step by step (what you'll actually see)
 
 | | |
