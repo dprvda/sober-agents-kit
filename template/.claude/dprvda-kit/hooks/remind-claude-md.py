@@ -126,7 +126,9 @@ def main() -> int:
     if not COMMIT_PATTERN.search(cmd):
         return 0
 
-    project_path = repo_root() / "CLAUDE.md"
+    project_path = repo_root() / "AGENTS.md"          # canonical rules (CLAUDE.md is just the bridge)
+    if not project_path.exists():
+        project_path = repo_root() / "CLAUDE.md"      # pre-flip installs
     global_path = Path.home() / ".claude" / "CLAUDE.md"
 
     print(
