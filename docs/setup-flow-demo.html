@@ -88,8 +88,14 @@ h1{font-family:Georgia,serif;font-size:34px;margin-bottom:4px}
   <span class="sys">1) take it  2) name your own  3) decide later — the stack helpers
   are optional and activate any time by re-running this setup ·
   unsure? say "ask me" and I'll interview you for this one</span>
-<span class="a">→ 1</span></div>
-<div class="note">The kit already knows what they're building, so it <b>leads with the proposal</b> — one keystroke for the common case, a link to the full study for the curious.</div></div>
+<span class="a">→ 1</span>
+
+<span class="act">◆ One more thing I'll do with this: AIs are trained on OLDER versions
+  of these tools. So I'm copying short, current fact-sheets (verified
+  2026-07) about Neon, Apify, and typed-Python practice into your
+  project — they auto-load into every session, so your AI always
+  builds with the CURRENT way, not last year's.</span></div>
+<div class="note">The kit already knows what they're building, so it <b>leads with the proposal</b> — and solves the stale-training problem: <b>current framework fact-sheets travel with the project</b> and load every session.</div></div>
 
 <div class="step"><div class="bar"><span>interview — session memory (opt-in)</span><span class="t">step 4 · memory</span></div>
 <div class="term"><span class="q">? This looks like a months-long project. Want the memory system?
@@ -208,6 +214,8 @@ h1{font-family:Georgia,serif;font-size:34px;margin-bottom:4px}
   AGENTS.md                 your standing rules, Karpathy-style draft
                             you approved (+ a one-line Claude bridge)
   docs/STACK.md             your stack guide + AI best practices
+  docs/framework-*.md (3)   current fact-sheets: neon, apify,
+                            python-typed — auto-load every session
   CHEATSHEET.md             how to work here, personalized
   .env (gitignored)         judge prefilled, key left blank for you
   .mcp.json                 the GitHub connection you said yes to
@@ -237,8 +245,9 @@ h1{font-family:Georgia,serif;font-size:34px;margin-bottom:4px}
     anything unattended, ccusage weekly
   · what each check blocks and how to fix it properly (never bypass)
   · your judge: where the key lives, the self-test, how to rotate it
-  · the session rhythm: a new session already knows the state;
-    end of day → /handoff packages it for tomorrow</span>
+  · the session rhythm: a new session already knows the state —
+    including the CURRENT facts about your tools; end of day →
+    /handoff packages it for tomorrow</span>
 
 <span class="act">Setup complete. Open a new Claude session in my-shop-automation/
 and just start working — the rails are in.</span></div>
