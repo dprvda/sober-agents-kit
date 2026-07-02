@@ -159,9 +159,6 @@ their protection is the git-level layer above — same rules, one stage later. S
 | `sober-setup` | re-run the interview any time to audit or update the setup |
 | `handoff` | saves verified progress notes so tomorrow's session continues exactly where today's stopped |
 | `graphify` | my standalone code-knowledge-graph tool, bundled for convenience: builds a queryable map of the whole codebase, one question replaces reading ten files |
-| `systematic-debugging` | finds the real cause instead of patching the symptom; rethinks after 3 failed fixes |
-| `subagent-driven-development` | parallel AI workers with an independent AI double-checking each part |
-| `receiving-code-review` | takes criticism properly: verifies feedback before acting, never flatters |
 | `tdd` | a test before code, so bugs are caught the moment they're made |
 | `grill-me` | interrogates your plan hard before you build the wrong thing |
 | `to-issues` / `compact-docs` / `audit-structure` / `zoom-out` / `caveman` / `write-a-skill` | tickets from a plan · doc trimming · structure review · big-picture re-orient · terse mode · teach a new procedure |

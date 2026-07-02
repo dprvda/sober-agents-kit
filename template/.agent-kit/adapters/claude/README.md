@@ -70,9 +70,6 @@ A "skill" is a multi-step workflow Claude invokes by name; each lives in
 | `sober-setup` | Re-run the kit's interview to audit or update this project's setup (thin stub; the playbook lives in the kit repo's `setup/INTERVIEW.md`) |
 | `handoff` | About to clear context — generates a PASS-AI handoff file + commits + pushes |
 | `graphify` | Build/query a knowledge graph of the whole codebase — one graph query replaces reading ten files |
-| `systematic-debugging` | Any bug or failing test — find the real cause before proposing fixes; stop and rethink after 3 failed attempts |
-| `subagent-driven-development` | Execute a plan as isolated subagent tasks with an independent reviewer per task |
-| `receiving-code-review` | Handle review feedback with verification, not performative agreement |
 | `tdd` | Red-green-refactor loop with tests |
 | `grill-me` | Stress-test a plan — Claude interrogates you on every branch |
 | `audit-structure` | Periodic Screaming Architecture + 6-axis structural review |

@@ -90,9 +90,6 @@ made at install.
 - `sober-setup` — audit/update this project's kit setup (playbook lives in the kit repo)
 - `handoff` — save verified progress notes so the next session continues without re-explaining
 - `graphify` — standalone code-graph tool (bundled); one graph query replaces reading ten files
-- `systematic-debugging` — find the real cause before fixing; rethink after 3 failed attempts
-- `subagent-driven-development` — parallel isolated workers + an independent reviewer per task
-- `receiving-code-review` — verify review feedback before acting, never flatter
 - `tdd` — test before code · `grill-me` — interrogate a plan before building
 - `to-issues` — split a plan into grabbable tickets · `compact-docs` — trim over-budget docs
 - `audit-structure` — folder/naming review · `zoom-out` — re-orient after a deep dive

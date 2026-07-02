@@ -178,11 +178,14 @@ Batch B (the machinery):
    this project; full catalog: skills-catalog.md; the full study behind the menu:
    pravda.systems/blog/run-parallel-ai-coding-agents-without-babysitting"). Under the ~12 ceiling
    (past ~12 similar skills agents pick the wrong one). Kit skills matched to the archetype and
-   answers (e.g. data pipeline + parallel agents → tdd, systematic-debugging,
-   subagent-driven-development, handoff, compact-docs; UI work → add visual-eyes; unsure
-   planning → grill-me), plus the vetted third-party menu (Stage 3) folded in as unchecked extras
-   with license + cost notes. The user confirms/edits one checklist; deselected skills are listed
-   in the cheatsheet as add-when-needed.
+   answers (e.g. data pipeline + parallel agents → tdd, handoff, compact-docs; unsure planning →
+   grill-me), plus the vetted third-party menu (Stage 3) folded in with license + cost notes.
+   **BUNDLING RULE (binding): only the operator's own skills ship inside this kit. Every
+   third-party skill (Superpowers' systematic-debugging / subagent-driven-development /
+   receiving-code-review, visual-eyes, Planning with Files, …) is INSTALLED FROM ITS ORIGINAL
+   SOURCE at setup — its repo or plugin command, pinned to a commit SHA — never copied out of
+   this repo.** The user confirms/edits one checklist; deselected skills are listed in the
+   cheatsheet as add-when-needed with their install commands.
 9. **MCP servers** — GitHub? Serena (code navigation)? Neither (`--no-mcp`)? If Serena: ask which
    dirs hold code and patch `CODE_DIR_PREFIXES` in `nudge-to-serena.py`. (MCP wiring ships for
    Claude Code's `.mcp.json`; Codex/OpenClaw/Hermes have their own MCP config surfaces — offer

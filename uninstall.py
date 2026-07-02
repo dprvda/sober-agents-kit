@@ -36,8 +36,7 @@ def main() -> int:
         print(f"[uninstall] removed {kit}")
     for mirror in (dst / ".claude" / "skills", dst / ".agents" / "skills"):
         # kit-installed skill mirrors; leave any non-kit skill a user added
-        for name in ("sober-setup", "handoff", "graphify", "systematic-debugging",
-                     "subagent-driven-development", "receiving-code-review", "tdd",
+        for name in ("sober-setup", "handoff", "graphify", "tdd",
                      "grill-me", "to-issues", "compact-docs", "audit-structure",
                      "zoom-out", "caveman", "write-a-skill"):
             d = mirror / name

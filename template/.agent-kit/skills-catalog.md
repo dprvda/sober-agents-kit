@@ -5,13 +5,10 @@ agents, overnight runs) and proposes ≤12. Descriptions follow the cold-user ru
 jargon. Grades: ★ = installed + tested by us hands-on · ✓ = read file-by-file · ~ = corpus-reported
 (practitioner sources, not independently run). Licenses verified where graded ★/✓.
 
-## From this kit (installed by default set, pick per project)
+## From this kit (the operator's own skills — the ONLY ones bundled; third-party is always installed from its original source)
 | Skill | What it gives you |
 |---|---|
 | tdd | the AI writes a test before code, so bugs are caught the moment they're made |
-| systematic-debugging ★ | finds the real cause of a break instead of patching the symptom; stops and rethinks after 3 failed fixes |
-| subagent-driven-dev ★ | several AI workers build parts in parallel without stepping on each other; an independent AI double-checks each part |
-| receiving-code-review ★ | the AI takes criticism properly: verifies feedback before acting, never flatters |
 | handoff | saves progress notes so tomorrow's session continues exactly where today's stopped |
 | compact-docs | keeps project docs short enough that the AI actually reads them |
 | grill-me | interrogates your plan hard before you build the wrong thing |
@@ -25,7 +22,7 @@ jargon. Grades: ★ = installed + tested by us hands-on · ✓ = read file-by-fi
 ## Third-party — vetted (license-checked; install commands in the interview)
 | Pack | What it gives you | Grade / license |
 |---|---|---|
-| superpowers (obra) | a strict senior-engineer working style: design first, test first, verify before claiming done | ★ MIT |
+| superpowers (obra) | a strict senior-engineer working style: design first, test first, verify before claiming done. Its systematic-debugging, subagent-driven-development, and receiving-code-review skills are the three we run daily (★ hands-on). ALWAYS installed from obra's repo at setup, never bundled here | ★ MIT |
 | planning-with-files | the AI keeps a written plan + findings on disk and refuses to quit mid-phase; survives restarts | ✓ MIT |
 | ponytail | forces "does this code even need to exist?" before writing; measured ~54% less code | ✓ MIT |
 | visual-eyes | the AI looks at screenshots of your app and fixes what looks wrong | ★ MIT |
