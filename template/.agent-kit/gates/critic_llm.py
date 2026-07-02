@@ -201,6 +201,19 @@ def eprint(msg: str) -> None:
 # ---------------------------------------------------------------------------
 
 
+# The kit's own vendored machinery is reviewed in the kit's repo, not in every
+# adopting repo — judging it here produces noise verdicts on battle-tested files
+# on the very first adoption commit (same self-exemption precedent as
+# check_md_size). Derived from __file__ so a --kit-name rename still works.
+_KIT_DIR_NAME = Path(__file__).resolve().parents[1].name
+_EXEMPT_PREFIXES = ((_KIT_DIR_NAME,), (".claude", "skills"), (".agents", "skills"))
+
+
+def _is_kit_vendored(p: Path) -> bool:
+    """True for paths inside the kit's own dir or a vendored skills mirror."""
+    return any(p.parts[: len(pre)] == pre for pre in _EXEMPT_PREFIXES)
+
+
 def get_staged_source_files() -> list[Path]:
     """Return staged paths under SUPPORTED_EXTS, relative to repo root."""
     proc = subprocess.run(
@@ -218,7 +231,7 @@ def get_staged_source_files() -> list[Path]:
         if not s:
             continue
         p = Path(s)
-        if p.suffix in SUPPORTED_EXTS:
+        if p.suffix in SUPPORTED_EXTS and not _is_kit_vendored(p):
             out.append(p)
     return out
 
