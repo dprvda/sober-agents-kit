@@ -17,6 +17,13 @@ Options:
   --project-name NAME  value for __PROJECT_NAME__ (default: target folder name)
   --project-owner OWN  value for __PROJECT_OWNER__ in .mcp.json (default: blank)
   --kit-name NAME      namespace dir under .claude/ (default: dprvda-kit)
+  --tools LIST         comma list of AI tools this repo is used with:
+                       claude,codex,openclaw,hermes (default: claude).
+                       codex/openclaw -> skills are mirrored into .agents/skills/ (the
+                       agentskills.io location both read); openclaw/hermes -> the copy command
+                       for their user-level skills dir is printed (never written to $HOME);
+                       without claude -> the Claude-only live layer (settings.json, hooks/,
+                       session injector) is stripped. The git-level gates install for every tool.
   --rust               also install the Rust pack (cargo-audit, cargo-vet, binary-secrets)
   --python             also install the Python pack (ruff lint)
   --no-ai-judge        do NOT install the AI code-review judge (critic_llm*, launch hook)
@@ -194,6 +201,37 @@ def size_sessionstart(dst: Path, kit_name: str) -> None:
     log(f"sized SessionStart to {n} chunk(s)")
 
 
+def mirror_skills_for_agents(dst: Path) -> None:
+    # Codex + OpenClaw read repo-level skills from .agents/skills/ (the agentskills.io
+    # convention); Claude Code reads .claude/skills/. Mirror so one skill set serves both.
+    src = dst / ".claude" / "skills"
+    out = dst / ".agents" / "skills"
+    if not src.exists():
+        return
+    for item in src.rglob("*"):
+        rel = item.relative_to(src)
+        o = out / rel
+        if item.is_dir():
+            o.mkdir(parents=True, exist_ok=True)
+        else:
+            o.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(item, o)
+    log("mirrored skills into .agents/skills/ (Codex / OpenClaw)")
+
+
+def strip_claude_live_layer(dst: Path, kit_name: str) -> None:
+    # No Claude Code in the tool list: the live layer (settings hooks, session injector,
+    # in-session guards) has nothing to run it. The git-level gates + AGENTS.md + skills stay.
+    base = dst / ".claude"
+    (base / "settings.json").unlink(missing_ok=True)
+    (base / "settings.local.json.example").unlink(missing_ok=True)
+    (base / kit_name / "inject_context_docs.py").unlink(missing_ok=True)
+    hooks = base / kit_name / "hooks"
+    if hooks.exists():
+        shutil.rmtree(hooks)
+    log("Claude Code live layer omitted (no 'claude' in --tools); git-level gates kept")
+
+
 def run_precommit(dst: Path) -> None:
     if not shutil.which("pre-commit"):
         log("pre-commit not found; install with: pip install pre-commit")
@@ -211,6 +249,7 @@ def main() -> int:
     ap.add_argument("--project-name")
     ap.add_argument("--project-owner", default="")
     ap.add_argument("--kit-name", default="dprvda-kit")
+    ap.add_argument("--tools", default="claude")
     ap.add_argument("--rust", action="store_true")
     ap.add_argument("--python", action="store_true")
     ap.add_argument("--no-ai-judge", action="store_true")
@@ -228,8 +267,13 @@ def main() -> int:
     if not dst.exists():
         ap.error(f"target does not exist: {dst}")
     project_name = args.project_name or dst.name
+    tools = {t.strip().lower() for t in args.tools.split(",") if t.strip()}
+    known = {"claude", "codex", "openclaw", "hermes", "cursor"}
+    for t in tools - known:
+        warn(f"unknown tool '{t}' in --tools (known: {', '.join(sorted(known))}); "
+             "the git-level gates + AGENTS.md cover it anyway")
 
-    log(f"installing dprvda-kit into {dst}")
+    log(f"installing dprvda-kit into {dst} (tools: {', '.join(sorted(tools))})")
     notes = copy_payload(TEMPLATE, dst)
 
     if args.no_ai_judge:
@@ -244,7 +288,12 @@ def main() -> int:
 
     rename_kit(dst, args.kit_name)
     substitute(dst, project_name, args.project_owner)
-    size_sessionstart(dst, args.kit_name)
+    if tools & {"codex", "openclaw"}:
+        mirror_skills_for_agents(dst)
+    if "claude" in tools:
+        size_sessionstart(dst, args.kit_name)
+    else:
+        strip_claude_live_layer(dst, args.kit_name)
     if not args.no_precommit:
         run_precommit(dst)
 
@@ -255,10 +304,19 @@ def main() -> int:
     print()
     print("Next steps:")
     print(f"  1. cd {dst}")
-    print("  2. Fill in the <!-- FILL IN --> sections of CLAUDE.md.")
+    print("  2. Fill in the <!-- FILL IN --> sections of AGENTS.md (the one rules file every tool reads).")
     print("  3. (AI judge) put your key in .env:  LLM_JUDGE_API_KEY=sk-...   (blank = judge soft-passes)")
-    print("  4. Open the repo in Claude Code:  claude")
-    print("  5. Make a test commit to see the gates run.")
+    if "claude" in tools:
+        print("  4. Open the repo in Claude Code:  claude")
+    if "codex" in tools:
+        print("  *  Codex reads AGENTS.md natively; skills are in .agents/skills/ (invoke via /skills).")
+    if "openclaw" in tools:
+        print("  *  OpenClaw: skills are project-level in .agents/skills/; for the user-level dir run:")
+        print(f"     cp -r {(dst / '.agents' / 'skills').as_posix()}/* ~/.openclaw/skills/")
+    if "hermes" in tools:
+        print("  *  Hermes reads AGENTS.md/CLAUDE.md; install skills user-level:")
+        print(f"     cp -r {(dst / '.claude' / 'skills').as_posix()}/* ~/.hermes/skills/")
+    print("  *  Make a test commit to see the gates run (they protect EVERY tool, git-level).")
     return 0
 
 

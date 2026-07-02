@@ -1,7 +1,9 @@
 # Project: __PROJECT_NAME__ — RULES ONLY (canonical for ALL agents)
 
-This file is **rules-only** — the ONE canonical instruction file, read natively by Cursor / Codex / Continue / Aider / any AGENTS.md-aware tool, and imported by Claude Code via CLAUDE.md. State / architecture / reference docs live
-under `docs/`. The full Claude Code setup spec is in [`README-CLAUDE.md`](README-CLAUDE.md). The kit's
+This file is **rules-only** — the ONE canonical instruction file, read natively by Codex / Cursor /
+OpenClaw / Hermes / Continue / Aider / any AGENTS.md-aware tool, and imported by Claude Code via the
+one-line CLAUDE.md. State / architecture / reference docs live under `docs/`. The Claude-Code-specific
+wiring (live hooks, session memory) is specced in [`README-CLAUDE.md`](README-CLAUDE.md). The kit's
 machinery lives under [`.claude/dprvda-kit/`](.claude/dprvda-kit/). Keep this file short
 (`check_md_size` enforces a budget); link, don't duplicate.
 
@@ -57,7 +59,10 @@ Time horizons ("by morning", "while I'm away") are DEADLINES, not scopes. Don't 
 quality bar stays full per item. Backlog empty → write a short autopilot-proposal doc and continue
 on docs/cleanup. Never auto-pause.
 
-## Claude Code hooks (`.claude/settings.json` → `.claude/dprvda-kit/hooks/`)
+## Live hooks — Claude Code only (`.claude/settings.json` → `.claude/dprvda-kit/hooks/`)
+
+When the session runs in Claude Code, these fire in-session (other tools rely on the git-level
+gates above, which protect every tool):
 
 - `block-dangerous-git.py` — blocks history-rewrite git ops (force-push, `reset --hard`,
   `clean -f`, `checkout/restore .`, `branch -D`, `filter-branch`). Normal `push` to any branch is fine.
@@ -66,10 +71,23 @@ on docs/cleanup. Never auto-pause.
 - `remind-claude-md.py` — re-injects this file's critical sections on `git commit`.
 - `nudge-to-*` — soft PostToolUse suggestions to use MCP tools (never block).
 
-## Skills (`/<name>`)
+## Skills (saved procedures — invoke by name in any tool that reads them)
 
-`handoff` · `grill-me` · `caveman` · `tdd` · `to-issues` · `write-a-skill` · `zoom-out` ·
-`audit-structure` · `compact-docs`. See each `.claude/skills/<name>/SKILL.md`.
+Cross-tool SKILL.md format (agentskills.io). Claude Code reads `.claude/skills/`; Codex and
+OpenClaw read the mirrored `.agents/skills/` when installed with those tools.
+
+- `sober-setup` — audit/update this project's kit setup (playbook lives in the kit repo)
+- `handoff` — save verified progress notes so the next session continues without re-explaining
+- `graphify` — build/query a code knowledge graph; one query replaces reading ten files
+- `systematic-debugging` — find the real cause before fixing; rethink after 3 failed attempts
+- `subagent-driven-development` — parallel isolated workers + an independent reviewer per task
+- `receiving-code-review` — verify review feedback before acting, never flatter
+- `tdd` — test before code · `grill-me` — interrogate a plan before building
+- `to-issues` — split a plan into grabbable tickets · `compact-docs` — trim over-budget docs
+- `audit-structure` — folder/naming review · `zoom-out` — re-orient after a deep dive
+- `caveman` — ultra-short answers mode · `write-a-skill` — teach the AI a new procedure
+
+See each `SKILL.md` for the full procedure.
 
 ## Critical project rules
 
