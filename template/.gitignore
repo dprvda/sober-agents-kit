@@ -22,3 +22,6 @@ __pycache__/
 # OS noise
 .DS_Store
 Thumbs.db
+
+# local-only exact key-name map (never commit)
+INFRASTRUCTURE.keys.local.md

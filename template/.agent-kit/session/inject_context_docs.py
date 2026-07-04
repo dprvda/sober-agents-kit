@@ -108,6 +108,7 @@ def _build_corpus() -> list[tuple[str, str]]:
     Generic order:
       1. Latest .claude/handoffs/handoff_*.md (newest) + continue-directive
       2. AGENTS.md (the canonical rules, every tool)
+         + INFRASTRUCTURE.md (the arsenal: stack, services, local systems, existing engines) if present
       3. .agent-kit/adapters/claude/README.md (if present)
       4. docs/*.md  (sorted alphabetically)
       5. ADR index  (auto-generated from docs/decisions/ADR-*.md)
@@ -126,8 +127,8 @@ def _build_corpus() -> list[tuple[str, str]]:
     if handoff:
         items.append(("latest handoff + continue-directive", handoff))
 
-    # 2-3. Primary orientation docs
-    for rel in ("AGENTS.md", ".agent-kit/adapters/claude/README.md"):
+    # 2-3. Primary orientation docs (INFRASTRUCTURE.md = the arsenal: keys/services + local systems + engines)
+    for rel in ("AGENTS.md", "INFRASTRUCTURE.md", ".agent-kit/adapters/claude/README.md"):
         text = _read(rel)
         if text:
             items.append((rel, text))
