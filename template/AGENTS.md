@@ -56,6 +56,8 @@ the project spine (key docs, live progress, recent state).
 
 ## Pointers, not prose
 
+- Model policy (which model per workflow — set it from the start; defaults are wrong):
+  [`.agent-kit/docs/model-policy.md`](.agent-kit/docs/model-policy.md).
 - Skills (saved procedures): invoke by name. Commit style: `.gitmessage`.
 - `archive/` is out of context: don't read it unless named. Deadlines are deadlines, not scopes;
   never auto-pause a long run.
