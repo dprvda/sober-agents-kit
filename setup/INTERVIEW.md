@@ -227,7 +227,7 @@ future install command.
    carry `frozen_at: <install date>` frontmatter (the doc gate blocks unstamped docs). Explain
    the system to the user in plain words: "project docs carry a freshness contract — either 'this
    snapshot is dated' (frozen_at) or 'this doc must change when these folders change'
-   (tracks_dir); a check on every commit keeps docs from silently rotting." On Claude Code, also
+   (tracks); a check on every commit keeps docs from silently rotting." On Claude Code, also
    tell them the payoff: anything in docs/ is auto-loaded into every fresh session (the
    SessionStart injection), so STACK.md's best practices follow the AI everywhere without
    re-explaining; complete the session-system walk: "every fresh session auto-loads your project
@@ -282,7 +282,7 @@ Four sections are MANDATORY in the cheatsheet (each burned a real user when miss
   are exactly the ones the freshness gate expects to stay true.
 - **Doc freshness, taught (issue #9).** Plain words: docs rot, the AI then trusts a wrong doc,
   so every authored doc declares its contract — `frozen_at: YYYY-MM-DD` (a dated snapshot, never
-  drift-checked) / `tracks_dir: [paths]` (a living doc that must move with the code it tracks) /
+  drift-checked) / `tracks: [paths]` (a living doc that must move with the code it tracks) /
   `derived_from:` (generated). Give the exact minimal frontmatter for adding a NEW doc that
   passes the gate, note that enforcement happens at the session-wrap (handoff) commit so
   mid-session commits never block, and name the escape (`--ack-no-drift PATH --reason '…'`,

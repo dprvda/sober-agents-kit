@@ -284,17 +284,17 @@ def effective_mtime(path: Path, repo_root: Path) -> float:
 # ----------------------------------------------------------------------
 
 
-def parse_tracks_dir(md_path: Path) -> list[str]:
-    """Read `.md` frontmatter and return a list of `tracks_dir:` values
-    (repo-relative posix paths). Returns `[]` for pages without the
-    field.
+def parse_tracks(md_path: Path) -> list[str]:
+    """Read `.md` frontmatter and return a list of `tracks:` values --
+    repo-relative posix paths, each a FILE or a DIRECTORY. Returns `[]`
+    for pages without the field.
 
     Accepted shapes in YAML:
 
-        tracks_dir: src/
-        tracks_dir:
+        tracks: src/schema.ts
+        tracks:
+          - src/schema.ts
           - src/
-          - lib/
     """
     try:
         text = md_path.read_text(encoding="utf-8", errors="replace")
@@ -309,7 +309,7 @@ def parse_tracks_dir(md_path: Path) -> list[str]:
         return []
     if not isinstance(body, dict):
         return []
-    raw = body.get("tracks_dir")
+    raw = body.get("tracks")
     if raw is None:
         return []
     if isinstance(raw, str):
@@ -320,6 +320,29 @@ def parse_tracks_dir(md_path: Path) -> list[str]:
         return []
     # Normalise: strip trailing slash, posix path.
     return [c.rstrip("/") for c in candidates if c.strip()]
+
+
+def has_deprecated_tracks_key(md_path: Path) -> str | None:
+    """Return the removed key name ('tracks_dir'/'tracks_file') if the
+    page's frontmatter still uses it, else None. The gate now has ONE
+    freshness key: `tracks:` (covers both files AND directories)."""
+    try:
+        text = md_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return None
+    m = _FRONTMATTER_RE.match(text)
+    if not m:
+        return None
+    try:
+        body = yaml.safe_load(m.group("body"))
+    except yaml.YAMLError:
+        return None
+    if not isinstance(body, dict):
+        return None
+    for k in ("tracks_dir", "tracks_file"):
+        if k in body:
+            return k
+    return None
 
 
 def newest_content_mtime(
@@ -396,23 +419,22 @@ def handoff_in_staged_commit(repo_root: Path) -> bool:
     return False
 
 
-def check_tracks_dir(
+def check_tracks(
     files: list[Path],
     repo_root: Path,
     mtime_cache: dict[Path, float],
 ) -> list[CheckError]:
     """Pass C -- cross-tree dependency (session-bounded).
 
-    For every authored `.md` whose frontmatter declares
-    `tracks_dir: <path>` (single or list), the cascade fires when BOTH
-    conditions hold:
+    For every authored `.md` whose frontmatter declares `tracks: <path>`
+    (single or list, each entry a FILE or a DIRECTORY), the cascade fires
+    when BOTH conditions hold:
 
       1. The current commit stages a session handoff
          (`.claude/handoffs/handoff_*.md`) -- i.e. this IS the
          session-wrap commit (`handoff_in_staged_commit`).
-      2. The tracking page's mtime is < the newest content mtime under
-         any tracked directory (tracked content drifted since the .md's
-         last update).
+      2. The tracking page's mtime is < the newest tracked file/dir mtime
+         (tracked content drifted since the .md's last update).
 
     Both conditions = AND. A mid-session code commit stages no handoff,
     so condition 1 is false and the whole pass no-ops -- the AI iterates
@@ -432,36 +454,44 @@ def check_tracks_dir(
         rel = f.relative_to(repo_root).as_posix()
         if any(rel.startswith(p) for p in TRACKS_DIR_PATH_EXEMPT_PREFIXES):
             continue
-        targets = parse_tracks_dir(f)
+        targets = parse_tracks(f)
         if not targets:
             continue
         page_mtime = mtime_cache.get(f) or effective_mtime(f, repo_root)
         mtime_cache[f] = page_mtime
-        # SERIAL_OK_LOOP: walks the (typ <= 3) tracked dirs declared by
-        # this page; each delegates to newest_content_mtime
+        # SERIAL_OK_LOOP: walks the (typ <= 3) tracked paths declared by
+        # this page; a dir delegates to newest_content_mtime, a file is a
+        # single effective_mtime.
         for target in targets:
             tracked = (repo_root / target).resolve()
-            child_mtime, child_path = newest_content_mtime(
-                tracked, repo_root, mtime_cache
-            )
-            if page_mtime < child_mtime:
-                rel_page = f.relative_to(repo_root).as_posix()
+            if tracked.is_dir():
+                child_mtime, child_path = newest_content_mtime(
+                    tracked, repo_root, mtime_cache
+                )
                 child_label = (
                     str(child_path.relative_to(repo_root))
                     if child_path
                     else target
                 )
+            elif tracked.is_file():
+                child_mtime = mtime_cache.get(tracked) or effective_mtime(
+                    tracked, repo_root
+                )
+                mtime_cache[tracked] = child_mtime
+                child_label = target
+            else:
+                continue  # missing path: no fire
+            if page_mtime < child_mtime:
                 errors.append(
                     CheckError(
                         severity="error",
-                        kind="tracks-dir",
-                        path=rel_page,
+                        kind="tracks",
+                        path=rel,
                         detail=(
-                            f"declares `tracks_dir: {target}` but page "
-                            f"is older than newest tracked file "
-                            f"{child_label}, and this commit stages a "
-                            f"handoff (session-wrap) -- reconcile the "
-                            f"doc body against the tracked drift."
+                            f"declares `tracks: {target}` but page is older "
+                            f"than tracked {child_label}, and this commit "
+                            f"stages a handoff (session-wrap) -- reconcile "
+                            f"the doc body against the tracked drift."
                         ),
                         depth=len(f.parts),
                     )
@@ -572,8 +602,25 @@ def check_authored_md_coverage(
         # Exempt by path prefix (auto-gen, framework, mirrors, etc.).
         if any(rel.startswith(p) for p in PASS_D_EXEMPT_PREFIXES):
             continue
-        # Required: tracks_dir OR frozen_at OR derived_from.
-        tracks = parse_tracks_dir(f)
+        # The removed keys are rejected loudly (one key now: `tracks:`).
+        deprecated = has_deprecated_tracks_key(f)
+        if deprecated:
+            errors.append(
+                CheckError(
+                    severity="error",
+                    kind="deprecated-tracks-key",
+                    path=rel,
+                    detail=(
+                        f"uses the removed frontmatter key `{deprecated}:`. "
+                        f"Rename it to `tracks:` (one key for files AND "
+                        f"directories)."
+                    ),
+                    depth=len(f.parts),
+                )
+            )
+            continue
+        # Required: tracks OR frozen_at OR derived_from.
+        tracks = parse_tracks(f)
         frozen = parse_frozen_at(f)
         derived = parse_derived_from(f)
         if tracks or frozen or derived:
@@ -585,7 +632,7 @@ def check_authored_md_coverage(
                 path=rel,
                 detail=(
                     "authored .md has no maintenance contract. Add ONE of:\n"
-                    "         - `tracks_dir: [<path>, ...]` in frontmatter (cascade-tracked living doc)\n"
+                    "         - `tracks: [<path>, ...]` in frontmatter (living doc; files or dirs)\n"
                     "         - `frozen_at: <YYYY-MM-DD>` in frontmatter (historical snapshot, intentionally not maintained)\n"
                     "         - `derived_from: [<path>, ...]` in frontmatter (PRESENTATION page, regenerated from listed sources)\n"
                     "         - move the file under archive/ if it's retired"
@@ -923,12 +970,12 @@ def main(argv: list[str] | None = None) -> int:
 
     folders, files = walk_repo(REPO_ROOT)
 
-    # Shared mtime cache so check_freshness + check_tracks_dir don't
+    # Shared mtime cache so check_freshness + check_tracks don't
     # re-read the same files twice (each file's git-log call costs a
     # subprocess).
     shared_cache: dict[Path, float] = {}
 
-    tracks_errors = check_tracks_dir(files, REPO_ROOT, shared_cache)
+    tracks_errors = check_tracks(files, REPO_ROOT, shared_cache)
     coverage_errors = check_authored_md_coverage(files, REPO_ROOT)
     all_errors = tracks_errors + coverage_errors
 

@@ -128,7 +128,7 @@ Run on every `git commit` by a two-phase dispatcher (`run_gates_parallel.py`), n
 | `critic_llm` (the AI judge) | a second, independent AI reviews each staged file against YOUR project rules; blank key ⇒ soft-pass |
 | `critic_llm_commit` | malformed Conventional Commits + judge cross-check of message vs diff |
 | `check_file_reason` | any new script with no `# REASON:` header (forces reuse-vs-create thinking) |
-| `check_doc_freshness` | docs drifting from the code they describe (`tracks_dir`/`frozen_at` contracts) |
+| `check_doc_freshness` | docs drifting from the code they describe (`tracks`/`frozen_at` contracts) |
 | `check_links` | broken `.md` cross-references |
 | `check_md_size` | docs growing past what an AI actually reads |
 | `check_force_push` | (pre-push stage) force-pushes + remote branch deletions, for EVERY tool and every clone |

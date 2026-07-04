@@ -15,7 +15,7 @@ Default roster (all language-agnostic, all blocking):
 
   Phase 2 — parallel (read-only doc + safety discipline):
     check_links       — every .md cross-reference resolves
-    check_doc_freshness — folder-README + tracks_dir cascade + orphan-md
+    check_doc_freshness — folder-README + tracks cascade + orphan-md
     check_md_size     — per-doc character budget
     check_secrets     — staged text scanned for secret-shaped strings
 

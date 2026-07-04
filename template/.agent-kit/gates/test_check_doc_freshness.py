@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# REASON: canary self-test for scripts/check_doc_freshness.py -- replaces hand-checking of gate behaviour after refactors; forces every gate-source change to re-prove that folder-README presence + mtime hierarchy + tracks_dir cascade + Pass D (tracks_dir / frozen_at / derived_from) all still fire correctly.
+# REASON: canary self-test for scripts/check_doc_freshness.py -- replaces hand-checking of gate behaviour after refactors; forces every gate-source change to re-prove that folder-README presence + mtime hierarchy + tracks cascade (file + dir entries) + Pass D (tracks / frozen_at / derived_from, with deprecated tracks_dir/tracks_file rejection) all still fire correctly.
 """
 Canary self-test for `scripts/check_doc_freshness.py`.
 
@@ -105,7 +105,7 @@ def _run_gate(cdf, repo: Path):
     return (
         cdf.check_presence(folders, files, repo)
         + cdf.check_freshness(folders, files, repo)
-        + cdf.check_tracks_dir(files, repo, cache)
+        + cdf.check_tracks(files, repo, cache)
         + cdf.check_authored_md_coverage(files, repo)
     )
 
@@ -213,7 +213,7 @@ def main() -> int:
             "docs/page.md",
             age_hours=13.0,
             content=(
-                "---\nfacts: []\ntracks_dir: src/\n---\n# page tracks src/\n"
+                "---\nfacts: []\ntracks: src/\n---\n# page tracks src/\n"
             ),
         )
         _commit_at(repo, "docs/README.md", age_hours=13.0, content="# docs")
@@ -221,7 +221,7 @@ def main() -> int:
 
         # Clean baseline -- no tracks-dir errors expected.
         errs = _run_gate(cdf, repo)
-        if any(e.kind == "tracks-dir" for e in errs):
+        if any(e.kind == "tracks" for e in errs):
             failures.append(
                 "Case 6a FAIL: clean tracks_dir baseline triggered "
                 f"tracks-dir error. Errors: {[(e.kind, e.path) for e in errs]}"
@@ -238,7 +238,7 @@ def main() -> int:
         # Case 6b: code drift, NO handoff anywhere, nothing staged ->
         # mid-session commit -> cascade MUST NOT fire.
         errs = _run_gate(cdf, repo)
-        if any(e.kind == "tracks-dir" and "page.md" in e.path for e in errs):
+        if any(e.kind == "tracks" and "page.md" in e.path for e in errs):
             failures.append(
                 "Case 6b FAIL: mid-session code drift (no handoff) DID "
                 "trigger tracks-dir. Pass C must stay silent when no "
@@ -260,7 +260,7 @@ def main() -> int:
         # commit -> cascade MUST NOT fire. This is the regression guard
         # for the session-long mis-fire bug.
         errs = _run_gate(cdf, repo)
-        if any(e.kind == "tracks-dir" and "page.md" in e.path for e in errs):
+        if any(e.kind == "tracks" and "page.md" in e.path for e in errs):
             failures.append(
                 "Case 6c FAIL: a handoff in history (not staged in this "
                 "commit) re-triggered tracks-dir. Pass C must key off the "
@@ -278,13 +278,84 @@ def main() -> int:
         )
         errs = _run_gate(cdf, repo)
         if not any(
-            e.kind == "tracks-dir" and "page.md" in e.path for e in errs
+            e.kind == "tracks" and "page.md" in e.path for e in errs
         ):
             failures.append(
                 "Case 6d FAIL: a staged handoff (the session-wrap "
                 "commit) + drifted tracked code did NOT trigger "
                 "tracks-dir on the tracking page. "
                 f"Errors: {[(e.kind, e.path) for e in errs]}"
+            )
+
+    # --- Case 6E: tracks (FILE entry) fires on the tracked file -------
+    with tempfile.TemporaryDirectory(prefix="cdf_canary_tracks_file_") as td:
+        repo = Path(td).resolve()
+        _git_init(repo)
+        _commit_at(repo, "src/schema.ts", age_hours=13.0, content="// v1")
+        _commit_at(repo, "src/README.md", age_hours=13.0, content="# src")
+        _commit_at(
+            repo, "docs/db.md", age_hours=13.0,
+            content="---\ntracks: src/schema.ts\n---\n# tracks schema.ts\n",
+        )
+        _commit_at(repo, "docs/README.md", age_hours=13.0, content="# docs")
+        _commit_at(repo, "README.md", age_hours=13.0, content="# repo")
+
+        errs = _run_gate(cdf, repo)
+        if any(e.kind == "tracks" for e in errs):
+            failures.append(
+                f"Case 6E-clean FAIL: clean file-track fired. {[(e.kind, e.path) for e in errs]}"
+            )
+
+        time.sleep(1.1)
+        _commit_at(repo, "src/schema.ts", age_hours=0.0, content="// v2")
+        _stage(repo, ".claude/handoffs/handoff_e.md", content="# h")
+        errs = _run_gate(cdf, repo)
+        if not any(e.kind == "tracks" and "db.md" in e.path for e in errs):
+            failures.append(
+                "Case 6E FAIL: tracked-FILE drift + staged handoff did NOT fire. "
+                f"{[(e.kind, e.path) for e in errs]}"
+            )
+
+    # --- Case 6G: file granularity (untracked sibling must NOT fire) --
+    with tempfile.TemporaryDirectory(prefix="cdf_canary_tracks_gran_") as td:
+        repo = Path(td).resolve()
+        _git_init(repo)
+        _commit_at(repo, "src/schema.ts", age_hours=13.0, content="// v1")
+        _commit_at(repo, "src/queue.ts", age_hours=13.0, content="// q1")
+        _commit_at(repo, "src/README.md", age_hours=13.0, content="# src")
+        _commit_at(
+            repo, "docs/db.md", age_hours=13.0,
+            content="---\ntracks: src/schema.ts\n---\n# tracks schema.ts\n",
+        )
+        _commit_at(repo, "docs/README.md", age_hours=13.0, content="# docs")
+        _commit_at(repo, "README.md", age_hours=13.0, content="# repo")
+
+        time.sleep(1.1)
+        _commit_at(repo, "src/queue.ts", age_hours=0.0, content="// q2")  # UNTRACKED sibling
+        _stage(repo, ".claude/handoffs/handoff_g.md", content="# h")
+        errs = _run_gate(cdf, repo)
+        if any(e.kind == "tracks" and "db.md" in e.path for e in errs):
+            failures.append(
+                "Case 6G FAIL: untracked sibling drift fired tracks. Granularity "
+                f"broken. {[(e.kind, e.path) for e in errs]}"
+            )
+
+    # --- Case 6H: missing tracked path -> no fire, no crash ----------
+    with tempfile.TemporaryDirectory(prefix="cdf_canary_tracks_missing_") as td:
+        repo = Path(td).resolve()
+        _git_init(repo)
+        _commit_at(
+            repo, "docs/db.md", age_hours=13.0,
+            content="---\ntracks: src/nope.ts\n---\n# tracks a missing file\n",
+        )
+        _commit_at(repo, "docs/README.md", age_hours=13.0, content="# docs")
+        _commit_at(repo, "README.md", age_hours=13.0, content="# repo")
+        _stage(repo, ".claude/handoffs/handoff_m.md", content="# h")
+        errs = _run_gate(cdf, repo)  # must not raise
+        if any(e.kind == "tracks" and "db.md" in e.path for e in errs):
+            failures.append(
+                "Case 6H FAIL: a doc tracking a MISSING file fired tracks. "
+                f"{[(e.kind, e.path) for e in errs]}"
             )
 
     # --- Case 7: Pass D -- orphan .md flagged --------------------------
@@ -329,7 +400,7 @@ def main() -> int:
         _commit_at(
             repo, "docs/page.md", age_hours=13.0,
             content=(
-                "---\nfacts: []\ntracks_dir: src/\n---\n"
+                "---\nfacts: []\ntracks: src/\n---\n"
                 "# page tracks src/\n"
             ),
         )
@@ -341,6 +412,27 @@ def main() -> int:
                 "Pass D 'orphan-md'. Pages with a declared maintenance "
                 "contract are NOT orphans. "
                 f"Errors: {[(e.kind, e.path) for e in errs]}"
+            )
+
+    # --- Case 8B: Pass D rejects the removed tracks_dir: key ----------
+    with tempfile.TemporaryDirectory(prefix="cdf_canary_deprecated_key_") as td:
+        repo = Path(td).resolve()
+        _git_init(repo)
+        _commit_at(repo, "src/lib.rs", age_hours=13.0, content="// v1")
+        _commit_at(repo, "src/README.md", age_hours=13.0, content="# src")
+        _commit_at(repo, "README.md", age_hours=13.0, content="# repo")
+        _commit_at(repo, "docs/README.md", age_hours=13.0, content="# docs")
+        _commit_at(
+            repo, "docs/old.md", age_hours=13.0,
+            content="---\ntracks_dir: src/\n---\n# uses the removed key\n",
+        )
+        errs = _run_gate(cdf, repo)
+        if not any(
+            e.kind == "deprecated-tracks-key" and "old.md" in e.path for e in errs
+        ):
+            failures.append(
+                "Case 8B FAIL: a doc using the removed tracks_dir: key was NOT "
+                f"rejected with deprecated-tracks-key. {[(e.kind, e.path) for e in errs]}"
             )
 
     # --- Case 9: Pass D -- index.md is exempt -------------------------
@@ -382,7 +474,7 @@ def main() -> int:
         _commit_at(repo, "docs/README.md", age_hours=13.0, content="# docs")
         _commit_at(
             repo, "docs/source.md", age_hours=13.0,
-            content="---\ntracks_dir: src/\n---\n# source page\n",
+            content="---\ntracks: src/\n---\n# source page\n",
         )
         # Presentation page: declares derived_from + nothing else. Should
         # NOT trigger orphan-md.
@@ -421,9 +513,9 @@ def main() -> int:
     print(
         "[test_check_doc_freshness] OK -- sibling rule absent (no presence-md / "
         "mtime-md fires); gate detects mtime-readme cascade, presence-readme "
-        "missing, cross-tree tracks_dir drift, AND Pass D orphan-md (with "
-        "index.md + tracks_dir/frozen_at/derived_from exemptions); "
-        "ignores clean baselines."
+        "missing, cross-tree tracks drift (file + dir entries), the "
+        "deprecated-key rejection, AND Pass D orphan-md (with index.md + "
+        "tracks/frozen_at/derived_from exemptions); ignores clean baselines."
     )
     return 0
 

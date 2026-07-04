@@ -87,6 +87,116 @@
             "type": "command",
             "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 8",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 9",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 10",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 11",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 12",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 13",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 14",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 15",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 16",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 17",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 18",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 19",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 20",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 21",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 22",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 23",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 24",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 25",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 26",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 27",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 28",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 29",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.agent-kit/session/inject_context_docs.py\" --chunk 30",
+            "timeout": 10
           }
         ]
       }
