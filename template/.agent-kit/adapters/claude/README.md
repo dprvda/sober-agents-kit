@@ -1,5 +1,5 @@
 ---
-tracks_dir:
+tracks:
   - .agent-kit/adapters/claude/hooks/
   - .claude/skills/
   - .claude/settings.json
@@ -78,6 +78,7 @@ A "skill" is a multi-step workflow Claude invokes by name; each lives in
 | `zoom-out` | Re-orient after a deep dive (broader-context map) |
 | `caveman` | Compress communication ~75% by dropping articles/filler |
 | `write-a-skill` | Bootstrap a new skill with proper structure |
+| `session-context-docs` | Set up (or audit) the file-scoped living docs that inject into every session so a fresh agent has full-project visibility |
 
 ---
 
@@ -107,7 +108,7 @@ an offline day still ships. A real `severity=block` blocks the commit —
 | Gate | What it enforces |
 |---|---|
 | `check_links.py` | Every `.md` cross-reference (target file + anchor) resolves. Native md parser, no subprocess. |
-| `check_doc_freshness.py` | Two active checks. **Pass C `tracks-dir`** (session-bounded) — fires when BOTH a file in the `.md`'s `tracks_dir:` is newer than the `.md` AND a `.claude/handoffs/handoff_*.md` is staged in the current commit; so a commit that stages no handoff never fires Pass C — the cascade surfaces only at session-wrap. **Pass D `orphan-md`** — every authored `.md` declares ONE of `tracks_dir:` / `frozen_at:` / `derived_from:`. Uses `effective_mtime = max(fs_mtime, git_commit_ts)` via `_git_mtime.py`, strict. `--ack-no-drift PATH --reason '<≥30 chars>'` is the audit-logged escape for pure mtime ripples with no body drift. |
+| `check_doc_freshness.py` | Two active checks. **Pass C `tracks`** (session-bounded) — fires when BOTH a tracked path in the `.md`'s `tracks:` is newer than the `.md` AND a `.claude/handoffs/handoff_*.md` is staged in the current commit; so a commit that stages no handoff never fires Pass C — the cascade surfaces only at session-wrap. **Pass D `orphan-md`** — every authored `.md` declares ONE of `tracks:` / `frozen_at:` / `derived_from:`. Uses `effective_mtime = max(fs_mtime, git_commit_ts)` via `_git_mtime.py`, strict. `--ack-no-drift PATH --reason '<≥30 chars>'` is the audit-logged escape for pure mtime ripples with no body drift. |
 | `check_md_size.py` | Per-doc **character**-budget gate. Each tier declares a BLOCK cap; WARN is derived `round(block×0.85)` (uniform 15% headroom). Caps map 1:1 onto the 10000-char SessionStart injection chunk. Tiers: `claude-md` 16800, `essential` (every `docs/*.md`) 19500, `handoff` 19500, `per-module-readme` 9500, `framework-rules` 19500, `other` 14400. `EXEMPT_PREFIXES` skips `archive/`, `docs/archive/`, `docs/planning/`, `target/`, `site/`; handoffs NOT exempt (own `handoff` tier). |
 
 **Optional gates** (enable per-project as needed):
@@ -144,7 +145,7 @@ Key sections (adapt per project): pre-commit gates · NO-bypasses ban-list · `a
 `check_doc_freshness.py` (Pass C/D mechanics in its gate row above) is
 the per-commit anchor — `.md` drift is the failure mode where the next
 AI session trusts a stale doc and wastes context. **Fix discipline:**
-when a doc's `tracks_dir:` source changes (Pass C fires on handoff-staging commits; Pass D enforces the frontmatter contract on every authored .md — folder-README presence checks exist in the script but are NOT active), Read the doc
+when a doc's `tracks:` source changes (Pass C fires on handoff-staging commits; Pass D enforces the frontmatter contract on every authored .md — folder-README presence checks exist in the script but are NOT active), Read the doc
 top-to-bottom, compare to current source, **rewrite wherever drift is
 found** — the body edits ARE the proof of reading. The gate's stderr
 prints this at the top, so an AI session sees it AT triage time.
