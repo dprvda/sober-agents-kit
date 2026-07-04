@@ -68,8 +68,13 @@ try:
     import yaml  # PyYAML
 except ImportError:
     print(
-        "[check_doc_freshness] PyYAML not installed (needed for tracks_dir parsing).\n"
-        "  pip install pyyaml",
+        "[check_doc_freshness] PyYAML is not available in this interpreter:\n"
+        f"    {sys.executable}\n"
+        "  The gate needs PyYAML to parse doc frontmatter. This usually means the\n"
+        "  gate ran under a project virtualenv that lacks PyYAML while system\n"
+        "  python has it. Fix with EITHER:\n"
+        f"    {sys.executable} -m pip install pyyaml   # install into THIS interpreter\n"
+        "    # or run the gate with a python that already has PyYAML (e.g. system python)",
         file=sys.stderr,
     )
     sys.exit(2)
