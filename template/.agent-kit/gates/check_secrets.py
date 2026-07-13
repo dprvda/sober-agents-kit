@@ -49,7 +49,10 @@ PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("hex private key (64 hex chars)", re.compile(r"0x[0-9a-fA-F]{64}")),
     ("AWS access key ID", re.compile(r"AKIA[A-Z0-9]{16}")),
     ("GitHub token", re.compile(r"gh[pousr]_[A-Za-z0-9]{36,}")),
-    ("OpenAI sk- API token", re.compile(r"sk-[A-Za-z0-9]{32,}")),
+    # Covers classic `sk-<alnum>` plus segmented modern formats
+    # (`sk-proj-...`, `sk-ant-api03-...`) whose bodies contain `-`/`_`.
+    ("OpenAI/Anthropic sk- API token",
+     re.compile(r"sk-(?:[A-Za-z0-9]+-)*[A-Za-z0-9_\-]{32,}")),
     # Real 1Password Service Account tokens begin `ops_eyJ` (base64 JSON);
     # the `eyJ` anchor avoids matching arbitrary `ops_<identifier>` strings.
     ("1Password Service Account token", re.compile(r"ops_eyJ[A-Za-z0-9_\-]{30,}")),

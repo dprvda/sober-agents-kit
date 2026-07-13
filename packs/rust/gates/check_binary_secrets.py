@@ -58,7 +58,10 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("hex private key (64 hex chars)", re.compile(r"0x[0-9a-fA-F]{64}")),
     ("GitHub Personal Access Token", re.compile(r"ghp_[A-Za-z0-9]{36}")),
-    ("sk- API token", re.compile(r"sk-[A-Za-z0-9]{32,}")),
+    # Covers classic `sk-<alnum>` plus segmented modern formats
+    # (`sk-proj-...`, `sk-ant-api03-...`) whose bodies contain `-`/`_`.
+    ("OpenAI/Anthropic sk- API token",
+     re.compile(r"sk-(?:[A-Za-z0-9]+-)*[A-Za-z0-9_\-]{32,}")),
     # Tightened to the JWT-style `eyJ` header so we don't match arbitrary
     # `ops_<identifier>` rodata blobs. Real 1Password SA tokens begin `ops_eyJ`.
     ("1Password Service Account token", re.compile(r"ops_eyJ[A-Za-z0-9_\-]{30,}")),
