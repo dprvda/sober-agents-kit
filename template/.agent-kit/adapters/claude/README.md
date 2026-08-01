@@ -101,7 +101,7 @@ an offline day still ships. A real `severity=block` blocks the commit —
 | Gate | What it enforces |
 |---|---|
 | `critic_llm.py` | **AI judge.** Reviews each staged `.py`/`.sh` against a project-aware rubric; returns `{ok, warn, block}`. On warn/block prepends `=== LLM_REVIEW_BLOCK ===` to the working-tree file (`--no-mutate` suppresses). Sidecar cache `.llm-review/<path>.json` keyed on sha256 of clean content. `unavailable_pass` on API miss/timeout. Same script runs `--files <target> --no-mutate` from `check-script-launch.py`. No bypass on `severity=block`. |
-| `check_file_reason.py` | Every script (`.py`/`.sh`/`.bash`) declares WHY it exists at the top via `# REASON:` — ≥30 chars + a substantive token (`vs`, `instead of`, `because`, `to enable`, `replaces`, `forces`, `no existing`, `needs review`). Forces reuse-vs-create thinking. |
+| `check_file_reason.py` | Every script (`.py`/`.sh`/`.bash`) declares WHY it exists at the top via `# REASON:` — ≥30 chars + a substantive token (`vs`, `instead of`, `because`, `to enable`, `replaces`, `forces`, `no existing`, `needs review`). Forces reuse-vs-create thinking. **Anything git ignores is skipped** (the walk asks `git check-ignore`): a `.py` dropped in a gitignored scratch or tool-installed skill dir used to block EVERY commit in the repo, which is how a gate meant to enforce discipline becomes the reason discipline is bypassed. Fails OPEN if git is unavailable. |
 
 ### Phase 2 — doc-drift + lint gates (enabled set)
 

@@ -42,6 +42,7 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -159,7 +160,43 @@ def _is_exempt_path(rel_posix: str) -> bool:
     return False
 
 
+def _gitignored(paths: list[Path]) -> set[Path]:
+    """Which of these paths git refuses to track.
+
+    The gate exists so every COMMITTED script declares why it exists, and a file
+    git will not accept can never be one. Without this the whole-repo walk was
+    blind to `.gitignore`, so ANY gitignored directory of tool-installed scripts
+    blocked every commit in the repo — 22 vendored skill payloads did exactly
+    that until 2026-07-31, including a one-line documentation fix. The
+    `EXEMPT_DIR_PARTS` entry added then named one directory and left the class
+    open; this closes it by asking git, which is the only authority on the
+    question.
+
+    Fails OPEN on any error (no git, not a repo, git too old): a gate that
+    silently stops scanning because a subprocess broke is worse than one that
+    scans a few ignored files.
+    """
+    if not paths:
+        return set()
+    try:
+        proc = subprocess.run(
+            ["git", "check-ignore", "--stdin", "-z"],
+            input="\0".join(str(p) for p in paths),
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+            timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return set()
+    # rc 0 = some ignored, 1 = none ignored; anything else is an error.
+    if proc.returncode not in (0, 1):
+        return set()
+    return {Path(line) for line in proc.stdout.split("\0") if line}
+
+
 def iter_target_files(include_tests: bool = False) -> Iterable[Path]:
+    candidates: list[Path] = []
     # SERIAL_OK_LOOP: os.walk is a generator with stateful pruning (we mutate
     # dirnames in-place to skip exempt subtrees); cannot be parallelised
     # without losing the prune semantics
@@ -185,6 +222,12 @@ def iter_target_files(include_tests: bool = False) -> Iterable[Path]:
                 rel.startswith(pre) for pre in TEST_DIR_PREFIXES
             ):
                 continue
+            candidates.append(p)
+
+    # ONE `git check-ignore` for the whole set — one process, not one per file.
+    ignored = _gitignored(candidates)
+    for p in candidates:
+        if p not in ignored:
             yield p
 
 
