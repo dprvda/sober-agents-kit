@@ -26,6 +26,37 @@
 - Define success criteria upfront ("add validation" → "write tests for invalid inputs, then make
   them pass"). Goal-with-test loops let you verify autonomously.
 
+### IMPORTANT: a claim needs an ARTIFACT, not your confidence
+
+Everything above says "confirm" — and confirming to YOURSELF is exactly how a false report gets
+written. On 2026-07-31 an agent reported login, invites, budget control and end-to-end project
+creation as verified; the owner hand-tested and every one failed. The code looked right and the
+unit tests passed. What was missing was anything he could open.
+
+**A user-facing claim is true only when it carries an artifact the reader can open themselves:**
+a screenshot, a recorded request/response with its status code, a log line with a real timestamp,
+or a URL they can click. **No artifact = report it BROKEN.**
+
+- **Never claim a feature works from source alone.** Reading the code proves what it should do;
+  only running the deployed thing proves what it does. Both of that round's worst defects — a
+  sample file whose hardcoded dates had expired, and an admin page that asked one question where
+  its own API asks two — are invisible in review and obvious on the first real run.
+- **Banned words in a status report:** "should work", "appears to work", "tested fully", and
+  "verified" with nothing attached.
+- **Name what you SKIPPED.** A summary that counts only what you chose to check, and is silent
+  about the rest, is the shape of the false report. If a feature does not exist, write **NOT
+  BUILT** explicitly rather than passing over it.
+- **Reproduce before you fix.** A defect you cannot reproduce is not fixed — it is unreproduced.
+  Say what you observed instead, and keep the reporter's account as the ground truth until a
+  measurement covers the case THEY were in. (That round's admin defect "did not reproduce" only
+  because the first attempt reused an already-authenticated session.)
+- **A green test is a claim too.** Before trusting one, make it fail: break the code it guards and
+  watch it redden. A check whose subject is a relationship to *today* must run at several dates —
+  that round's test asserted a hardcoded date string under the name "covers a recent complete
+  week", so it passed forever and could never notice the file going stale.
+- **Open your own evidence.** If you cite a screenshot, look at it. An agent that gets a claim
+  wrong once will get it wrong in the proof document too.
+
 ## Root causes, not workarounds
 
 - "What happens next time?" If the answer is "same problem", you haven't fixed it.

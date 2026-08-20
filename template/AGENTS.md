@@ -41,6 +41,16 @@ the project spine (key docs, live progress, recent state).
 - "Add validation" → "write tests for invalid inputs, make them pass."
 - After a fix: confirm with a real run, never "this should work."
 
+**A claim needs an ARTIFACT, not your confidence.** "Verified" is true only when it carries
+something the reader can open themselves: a screenshot, a recorded request/response with its
+status code, a log line with a real timestamp, or a URL they can click. **No artifact = report it
+BROKEN.** Never claim a feature works from source alone - reading the code proves what it should
+do, only running the deployed thing proves what it does. Reproduce a reported defect before
+fixing it; if it will not reproduce, say what you observed instead and keep the reporter's account
+as ground truth. Name what you SKIPPED, and write **NOT BUILT** rather than passing over a feature
+that does not exist. Before trusting a green test, make it fail. (Full reasoning and the incident
+that earned this: the "artifact, not confidence" section of the global seed.)
+
 ## 5. The gates are law
 
 **Every commit passes the gates. A gate failure means fix the cause.**
